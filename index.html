@@ -1,287 +1,761 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SIGMA 67 // CORE SYSTEM</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-body {
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-    background: black;
-    font-family: "Orbitron", sans-serif;
-    color: white;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cyan:#00ffcc;--magenta:#ff00aa;--green:#00ff88;
+  --border:rgba(0,255,200,0.25);--bg:rgba(0,0,0,0.8);
 }
+body{height:100vh;overflow:hidden;background:#000;font-family:"Orbitron",sans-serif;color:#fff;cursor:none;}
+canvas{position:fixed;inset:0;z-index:0;}
+.scanlines{position:fixed;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;}
+.vignette{position:fixed;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,0.75) 100%);pointer-events:none;}
 
-/* MATRIX CANVAS */
-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
+/* GLITCH OVERLAY */
+#glitchOverlay{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;display:none;}
+#glitchOverlay.active{display:block;animation:glitchOverlayAnim 3s forwards;}
+@keyframes glitchOverlayAnim{
+  0%{opacity:0;}2%{opacity:1;}4%{opacity:0;}6%{opacity:0.8;}8%{opacity:0;}
+  10%{opacity:0.6;}12%{opacity:0;}50%{opacity:0;}52%{opacity:0.4;}54%{opacity:0;}
+  99%{opacity:0;}100%{opacity:0;display:none;}
 }
+.glitch-line{position:absolute;left:0;right:0;height:2px;background:var(--cyan);mix-blend-mode:screen;}
+.glitch-bar{position:absolute;left:0;right:0;background:rgba(255,0,170,0.15);}
 
-/* FLASH */
-.flash {
-    position: fixed;
-    inset: 0;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    animation: flash 6s infinite;
-}
-@keyframes flash {
-    0%, 97%, 100% { opacity: 0; }
-    98% { opacity: 0.15; }
-}
+/* VOID MODE */
+body.void-mode{filter:invert(1) hue-rotate(180deg);}
+body.void-mode canvas{filter:invert(1);}
 
-/* CENTER */
-.wrapper {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
+/* ALERT MODE — matrix turns red */
+body.alert-mode #matrixColor{--mcolor:#ff0044;}
 
-h1 {
-    font-size: 100px;
-    letter-spacing: 22px;
-    text-shadow: 0 0 10px cyan, 0 0 25px magenta, 0 0 40px #00ff88;
-}
+.wrapper{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:28px;}
 
-/* LINKS */
-.links a {
-    display: block;
-    margin: 10px;
-    font-family: "Share Tech Mono", monospace;
-    color: #00ffcc;
-    text-decoration: none;
+h1{
+  font-size:clamp(48px,9vw,108px);font-weight:900;letter-spacing:0.18em;color:#fff;
+  text-shadow:0 0 8px var(--cyan),0 0 22px var(--cyan),0 0 55px rgba(0,255,200,0.35);
+  animation:titlePulse 4s ease-in-out infinite,glitch 7s infinite;position:relative;
 }
-.links a:hover {
-    transform: scale(1.3) rotate(-3deg);
-}
+h1::before,h1::after{content:"SIGMA 67";position:absolute;top:0;left:0;width:100%;opacity:0;}
+h1::before{color:var(--magenta);animation:glitchTop 7s infinite;clip-path:polygon(0 0,100% 0,100% 38%,0 38%);}
+h1::after{color:var(--cyan);animation:glitchBot 7s infinite;clip-path:polygon(0 62%,100% 62%,100% 100%,0 100%);}
 
-/* TERMINAL */
-.terminal {
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    font-family: monospace;
-    font-size: 11px;
-    color: #00ff88;
-    opacity: 0.8;
-    z-index: 5;
+@keyframes titlePulse{
+  0%,100%{text-shadow:0 0 8px var(--cyan),0 0 22px var(--cyan),0 0 55px rgba(0,255,200,0.35);}
+  50%{text-shadow:0 0 12px var(--cyan),0 0 38px var(--cyan),0 0 90px rgba(0,255,200,0.55);}
 }
+@keyframes glitch{0%,89%,100%{transform:translate(0);}90%{transform:translate(-2px,1px);}91%{transform:translate(2px,-1px);}92%{transform:translate(0);}}
+@keyframes glitchTop{0%,89%,100%{opacity:0;transform:translate(0);}90%{opacity:0.8;transform:translate(3px,-2px);}91%{opacity:0;}92%{opacity:0.5;transform:translate(-3px,0);}93%{opacity:0;}}
+@keyframes glitchBot{0%,89%,100%{opacity:0;transform:translate(0);}90%{opacity:0.6;transform:translate(-4px,2px);}91%{opacity:0.4;transform:translate(4px,0);}92%{opacity:0;}}
+
+.subtitle{font-family:"Share Tech Mono",monospace;font-size:11px;letter-spacing:0.4em;color:rgba(0,255,200,0.45);margin-top:-10px;}
+#callsignDisplay{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:0.25em;color:rgba(0,255,200,0.6);margin-top:-20px;min-height:14px;}
+
+.status-bar{display:flex;gap:20px;font-family:"Share Tech Mono",monospace;font-size:10px;color:rgba(0,255,200,0.45);letter-spacing:0.2em;}
+.status-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1.8s infinite;vertical-align:middle;margin-right:5px;}
+.status-dot.red{background:var(--magenta);box-shadow:0 0 6px var(--magenta);animation-delay:.6s;}
+.status-dot.yellow{background:#ffcc00;box-shadow:0 0 6px #ffcc00;animation-delay:1.2s;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+
+/* SIGMA SCORE */
+.sigma-score{font-family:"Share Tech Mono",monospace;font-size:11px;color:rgba(0,255,200,0.5);letter-spacing:0.2em;}
+#scoreVal{color:#fff;font-size:13px;font-weight:700;text-shadow:0 0 8px var(--cyan);}
+
+.links{display:flex;gap:14px;}
+.links a{font-family:"Share Tech Mono",monospace;font-size:13px;color:#fff;text-decoration:none;letter-spacing:0.12em;padding:10px 22px;border:1px solid rgba(0,255,200,0.45);background:rgba(0,0,0,0.55);transition:all 0.15s ease;backdrop-filter:blur(4px);}
+.links a:hover{border-color:var(--cyan);color:#000;background:var(--cyan);text-shadow:none;box-shadow:0 0 20px rgba(0,255,200,0.4);}
 
 /* CURSOR */
-.cursor {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    background: cyan;
-    border-radius: 50%;
-    mix-blend-mode: difference;
-    pointer-events: none;
-    z-index: 10;
-}
+.cursor-outer{position:fixed;width:28px;height:28px;border:1px solid rgba(0,255,200,0.55);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .12s,height .12s,border-color .12s;}
+.cursor-inner{position:fixed;width:4px;height:4px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 6px var(--cyan);}
+/* CURSOR TRAIL */
+.trail-dot{position:fixed;width:3px;height:3px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:opacity .4s;}
 
-/* CORE PANEL */
-.core-panel {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    width: 280px;
-    padding: 12px;
-    background: rgba(0,0,0,0.65);
-    border: 1px solid rgba(0,255,200,0.3);
-    font-family: "Share Tech Mono", monospace;
-    color: #00ffcc;
-    z-index: 6;
-    backdrop-filter: blur(6px);
-}
+.terminal{position:fixed;bottom:18px;right:18px;font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--green);opacity:0.7;z-index:6;letter-spacing:0.05em;}
+.terminal::after{content:'_';animation:blink 1s infinite;}
 
-.core-title {
-    font-size: 12px;
-    margin-bottom: 8px;
-}
+.core-panel{position:fixed;bottom:18px;left:18px;width:320px;padding:16px;background:var(--bg);border:1px solid var(--border);font-family:"Share Tech Mono",monospace;color:var(--cyan);z-index:6;backdrop-filter:blur(10px);}
+.core-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.45;}
+.core-title{font-size:10px;letter-spacing:0.3em;color:rgba(0,255,200,0.45);margin-bottom:12px;}
+.btn-row{display:flex;flex-direction:column;gap:3px;}
 
-button {
-    width: 100%;
-    margin: 4px 0;
-    background: transparent;
-    border: 1px solid rgba(0,255,200,0.2);
-    color: #00ffcc;
-    padding: 6px;
-    cursor: pointer;
-    font-size: 11px;
-    text-align: left;
-}
+button{width:100%;background:transparent;border:1px solid rgba(0,255,200,0.15);color:var(--cyan);padding:7px 10px;cursor:none;font-size:11px;font-family:"Share Tech Mono",monospace;text-align:left;letter-spacing:0.05em;transition:all .12s;}
+button:hover{background:rgba(0,255,200,0.08);border-color:rgba(0,255,200,0.4);text-shadow:0 0 8px var(--cyan);}
+button.active{border-color:var(--cyan);background:rgba(0,255,200,0.1);color:#fff;}
 
-button:hover {
-    background: rgba(0,255,200,0.1);
-}
+#gameArea{margin-top:12px;min-height:80px;font-size:11px;line-height:1.7;color:rgba(0,255,200,0.85);}
+#gameArea input{background:rgba(0,255,200,0.05);border:1px solid rgba(0,255,200,0.3);color:#fff;padding:6px 9px;font-family:"Share Tech Mono",monospace;font-size:11px;outline:none;cursor:none;letter-spacing:.08em;}
+#gameArea input::placeholder{color:rgba(0,255,200,0.3);}
+#gameArea input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,255,200,0.15);}
 
-#gameArea {
-    margin-top: 10px;
-    min-height: 70px;
-    font-size: 11px;
-}
+.cipher-wrap{display:flex;flex-direction:column;gap:7px;}
+.cipher-code{font-size:11px;color:#fff;letter-spacing:.1em;padding:6px 8px;border:1px solid rgba(0,255,200,0.2);background:rgba(0,255,200,0.04);word-break:break-all;line-height:1.9;}
+.cipher-hint{font-size:10px;color:rgba(0,255,200,0.4);}
+.cipher-row{display:flex;gap:6px;}
+.cipher-row input{flex:1;}
+.verify-btn{width:auto!important;padding:6px 14px;flex-shrink:0;}
+
+.result-ok{color:var(--green);text-shadow:0 0 8px var(--green);}
+.result-fail{color:var(--magenta);text-shadow:0 0 8px var(--magenta);}
+.big-click{font-size:20px;font-weight:700;color:#fff;text-shadow:0 0 14px var(--cyan);letter-spacing:.3em;animation:pulse .5s ease-in-out infinite alternate;}
+@keyframes pulse{from{opacity:1;}to{opacity:0.4;}}
+
+.void-count{font-size:30px;font-weight:700;color:#fff;letter-spacing:.1em;line-height:1;}
+.void-label{font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:4px;}
+
+/* TYPING TEST */
+.type-target{font-size:11px;color:#fff;padding:6px 8px;border:1px solid rgba(0,255,200,0.2);background:rgba(0,0,0,0.4);margin-bottom:6px;letter-spacing:.08em;line-height:1.8;}
+.type-target span.done{color:var(--green);}
+.type-target span.wrong{color:var(--magenta);text-decoration:underline;}
+.type-target span.current{background:rgba(0,255,200,0.2);}
+
+/* SIGNAL LOCK */
+.signal-grid{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.signal-btn{width:64px;height:32px;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .1s;}
+.signal-btn.lit{border-color:var(--cyan)!important;color:#000!important;background:var(--cyan)!important;box-shadow:0 0 10px rgba(0,255,200,0.5);}
+.signal-btn.wrong-flash{border-color:var(--magenta)!important;background:rgba(255,0,170,0.15)!important;}
+
+/* HACK SEQUENCE */
+.hack-dots{display:flex;gap:8px;margin:6px 0;}
+.hack-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,255,200,0.3);}
+.hack-dot.filled{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 6px var(--cyan);}
+.hack-numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px;}
+.hack-numpad button{padding:5px 0;font-size:12px;width:100%;}
+.hack-attempt{font-size:10px;color:rgba(0,255,200,0.5);margin-top:4px;}
+
+/* COORDS */
+.coords{position:fixed;top:18px;right:18px;font-family:"Share Tech Mono",monospace;font-size:10px;color:rgba(0,255,200,0.3);z-index:6;letter-spacing:.1em;}
+
+/* CORNERS */
+.corner{position:fixed;width:18px;height:18px;z-index:5;opacity:0.35;}
+.corner-tl{top:12px;left:12px;border-top:1px solid var(--cyan);border-left:1px solid var(--cyan);}
+.corner-tr{top:12px;right:12px;border-top:1px solid var(--cyan);border-right:1px solid var(--cyan);}
+.corner-bl{bottom:12px;left:12px;border-bottom:1px solid var(--cyan);border-left:1px solid var(--cyan);}
+.corner-br{bottom:12px;right:12px;border-bottom:1px solid var(--cyan);border-right:1px solid var(--cyan);}
+
+/* TOAST */
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);font-family:"Share Tech Mono",monospace;font-size:12px;color:#000;background:var(--cyan);padding:8px 20px;z-index:200;letter-spacing:.15em;opacity:0;transition:opacity .3s;pointer-events:none;}
+#toast.show{opacity:1;}
+
+/* SECRET REVEAL */
+#secretReveal{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);font-family:"Share Tech Mono",monospace;text-align:center;}
+#secretReveal.active{display:flex;}
+#secretReveal h2{font-family:"Orbitron",sans-serif;font-size:clamp(24px,5vw,52px);color:var(--cyan);text-shadow:0 0 20px var(--cyan),0 0 60px rgba(0,255,200,0.4);letter-spacing:.2em;animation:pulse 1s infinite alternate;}
+#secretReveal p{color:rgba(0,255,200,0.6);font-size:12px;margin-top:16px;letter-spacing:.2em;}
+#secretReveal .close-btn{margin-top:24px;width:auto;padding:8px 24px;}
+
+/* IDLE WARNING */
+#idleWarning{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:"Share Tech Mono",monospace;font-size:13px;color:var(--magenta);text-shadow:0 0 12px var(--magenta);letter-spacing:.2em;z-index:10;display:none;text-align:center;pointer-events:none;}
+#idleWarning.show{display:block;animation:idlePulse 1s infinite alternate;}
+@keyframes idlePulse{from{opacity:1;}to{opacity:0.3;}}
 </style>
 </head>
-
 <body>
 
 <canvas id="matrix"></canvas>
-<div class="flash"></div>
-<div class="cursor" id="cursor"></div>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div id="glitchOverlay"></div>
 
-<div class="wrapper">
-    <h1>SIGMA 67</h1>
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
 
-    <div class="links">
-        <a href="https://www.tiktok.com/@thesteve2017">TT NODE</a>
-        <a href="https://soundcloud.com/stxve17">SC STREAM</a>
-        <a href="https://selbsthilfe-hier-buchen.webnode.page/">UNKNOWN ACCESS</a>
-    </div>
+<div class="cursor-outer" id="cursorOuter"></div>
+<div class="cursor-inner" id="cursorInner"></div>
+
+<div id="toast"></div>
+<div id="idleWarning">WARNING: USER ABSENT<br><span style="font-size:10px;color:rgba(255,0,170,0.6)">move to resume</span></div>
+
+<div id="secretReveal">
+  <h2>SECHSSIEBEN</h2>
+  <p>// CLASSIFIED ACCESS UNLOCKED //<br><br>du hast das versteckte wort gefunden.<br>sigma level: <span style="color:#fff">TRANSCENDED</span></p>
+  <button class="close-btn" onclick="closeSecret()">&gt; schließen</button>
 </div>
 
-<div class="terminal" id="terminal">> booting core...</div>
+<div class="wrapper">
+  <div>
+    <h1>SIGMA 67</h1>
+    <p class="subtitle">CORE SYSTEM ONLINE</p>
+    <p id="callsignDisplay"></p>
+  </div>
+
+  <div class="status-bar">
+    <span><span class="status-dot"></span>NODE ACTIVE</span>
+    <span><span class="status-dot yellow"></span>SIGNAL WEAK</span>
+    <span><span class="status-dot red" id="emotionDot"></span><span id="emotionLabel">EMOTION OFF</span></span>
+  </div>
+
+  <div class="sigma-score">SIGMA SCORE // <span id="scoreVal">0</span></div>
+
+  <div class="links">
+    <a href="https://www.tiktok.com/@thesteve2017">TT NODE</a>
+    <a href="https://soundcloud.com/stxve17">SC STREAM</a>
+    <a href="https://selbsthilfe-hier-buchen.webnode.page/">UNKNOWN</a>
+  </div>
+</div>
+
+<div class="terminal" id="terminal">&gt; booting core</div>
+<div class="coords" id="coords">X:0000 Y:0000</div>
 
 <div class="core-panel">
-    <div class="core-title">SIGMA CORE // MODULES</div>
-
-    <button onclick="toggle('reaction')">> reaction test</button>
-    <button onclick="toggle('cipher')">> cipher unlock</button>
-    <button onclick="toggle('void')">> void clicker</button>
-
-    <div id="gameArea"></div>
+  <div class="core-title">// SIGMA MODULES</div>
+  <div class="btn-row">
+    <button id="btn-callsign" onclick="toggle('callsign')">&gt; set callsign</button>
+    <button id="btn-reaction" onclick="toggle('reaction')">&gt; reaction test</button>
+    <button id="btn-typing"   onclick="toggle('typing')"  >&gt; typing speed</button>
+    <button id="btn-signal"   onclick="toggle('signal')"  >&gt; signal lock</button>
+    <button id="btn-hack"     onclick="toggle('hack')"    >&gt; hack sequence</button>
+    <button id="btn-cipher"   onclick="toggle('cipher')"  >&gt; cipher unlock</button>
+    <button id="btn-void"     onclick="toggle('void')"    >&gt; void clicker</button>
+  </div>
+  <div id="gameArea"></div>
 </div>
 
 <script>
-/* CURSOR */
-document.addEventListener("mousemove", e => {
-    const c = document.getElementById("cursor");
-    c.style.left = e.clientX + "px";
-    c.style.top = e.clientY + "px";
+/* ═══════════════════════════════════════
+   AUDIO ENGINE (Web Audio API, no files)
+═══════════════════════════════════════ */
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+
+function resumeAC(){ if(AC.state==="suspended") AC.resume(); }
+document.addEventListener("click", resumeAC, {once:true});
+
+function beep(freq=440, dur=0.08, type="square", vol=0.08){
+  try{
+    resumeAC();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(vol, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime+dur);
+    o.start(); o.stop(AC.currentTime+dur);
+  }catch(e){}
+}
+
+function playClick(){ beep(800,0.04,"square",0.06); }
+function playSuccess(){ beep(660,0.08,"sine",0.1); setTimeout(()=>beep(880,0.12,"sine",0.1),90); }
+function playFail(){ beep(200,0.15,"sawtooth",0.08); }
+function playGlitchSound(){
+  try{
+    resumeAC();
+    const buf=AC.createBuffer(1,AC.sampleRate*0.3,AC.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*0.3;
+    const src=AC.createBufferSource(), g=AC.createGain();
+    src.buffer=buf; src.connect(g); g.connect(AC.destination);
+    g.gain.setValueAtTime(0.15,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+0.3);
+    src.start();
+  }catch(e){}
+}
+
+function playAmbient(){
+  try{
+    resumeAC();
+    const o1=AC.createOscillator(), o2=AC.createOscillator();
+    const g=AC.createGain(), filter=AC.createBiquadFilter();
+    o1.type="sine"; o1.frequency.value=55;
+    o2.type="sine"; o2.frequency.value=58;
+    filter.type="lowpass"; filter.frequency.value=200;
+    o1.connect(filter); o2.connect(filter); filter.connect(g); g.connect(AC.destination);
+    g.gain.value=0.04;
+    o1.start(); o2.start();
+    o1.frequency.setValueAtTime(55,AC.currentTime);
+    o1.frequency.linearRampToValueAtTime(60,AC.currentTime+8);
+    o2.frequency.setValueAtTime(58,AC.currentTime);
+    o2.frequency.linearRampToValueAtTime(53,AC.currentTime+8);
+    setTimeout(()=>{ try{o1.stop();o2.stop();}catch(e){} setTimeout(playAmbient,2000); },8000);
+  }catch(e){}
+}
+// start ambient after first interaction
+document.addEventListener("click", ()=>{ setTimeout(playAmbient,500); }, {once:true});
+
+/* ═══════════════════════════════════════
+   CURSOR + TRAIL
+═══════════════════════════════════════ */
+const outerCursor = document.getElementById("cursorOuter");
+const innerCursor = document.getElementById("cursorInner");
+const TRAIL_LEN = 12;
+const trailDots = [];
+for(let i=0;i<TRAIL_LEN;i++){
+  const d=document.createElement("div");
+  d.className="trail-dot";
+  d.style.opacity="0";
+  document.body.appendChild(d);
+  trailDots.push({el:d,x:0,y:0});
+}
+let trailPositions=[];
+
+document.addEventListener("mousemove",e=>{
+  const x=e.clientX,y=e.clientY;
+  innerCursor.style.left=x+"px"; innerCursor.style.top=y+"px";
+  outerCursor.style.left=x+"px"; outerCursor.style.top=y+"px";
+  document.getElementById("coords").textContent="X:"+String(x).padStart(4,"0")+" Y:"+String(y).padStart(4,"0");
+  trailPositions.unshift({x,y});
+  if(trailPositions.length>TRAIL_LEN) trailPositions.pop();
+  trailDots.forEach((d,i)=>{
+    const p=trailPositions[i];
+    if(!p){d.el.style.opacity="0";return;}
+    d.el.style.left=p.x+"px"; d.el.style.top=p.y+"px";
+    d.el.style.opacity=String((1-(i/TRAIL_LEN))*0.35);
+  });
+  resetIdle();
+});
+document.addEventListener("mousedown",()=>{
+  outerCursor.style.width=outerCursor.style.height="16px";
+  outerCursor.style.borderColor="rgba(0,255,200,1)";
+  playClick();
+});
+document.addEventListener("mouseup",()=>{
+  outerCursor.style.width=outerCursor.style.height="28px";
+  outerCursor.style.borderColor="rgba(0,255,200,0.55)";
 });
 
-/* TERMINAL */
-const lines = [
-"> syncing reality...",
-"> sigma core active",
-"> glyph engine loaded",
-"> emotion layer OFF",
-"> system unstable"
+/* ═══════════════════════════════════════
+   TERMINAL
+═══════════════════════════════════════ */
+const termLines=[
+  "&gt; syncing reality...","&gt; sigma core active","&gt; emotion layer OFF",
+  "&gt; system unstable","&gt; scanning for threats","&gt; glyph engine loaded",
+  "&gt; identity: UNKNOWN","&gt; uptime: 67:00:00","&gt; void detected",
+  "&gt; signal locked","&gt; weakness: NONE","&gt; processing...",
+  "&gt; firewall: BYPASSED","&gt; log: all clear","&gt; target: YOU"
 ];
+let tIdx=0;
+const termEl=document.getElementById("terminal");
+setInterval(()=>{ tIdx=(tIdx+1)%termLines.length; termEl.innerHTML=termLines[tIdx]; },1600);
 
-setInterval(() => {
-    document.getElementById("terminal").textContent =
-        lines[Math.floor(Math.random()*lines.length)];
-}, 1200);
+/* ═══════════════════════════════════════
+   MATRIX
+═══════════════════════════════════════ */
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+const FS=13;
+let cols,drops,dropAlpha;
+let matrixColor="#00ff88";
 
-/* MATRIX FIXED FULLSCREEN */
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
-
-const fontSize = 14;
-let columns;
-let drops;
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    columns = Math.floor(canvas.width / fontSize);
-    drops = Array(columns).fill(1);
+function resize(){
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  cols=Math.floor(canvas.width/FS);
+  drops=Array.from({length:cols},()=>Math.random()*(-(canvas.height/FS)*1.5));
+  dropAlpha=Array.from({length:cols},()=>0.5+Math.random()*0.5);
 }
+window.addEventListener("resize",resize); resize();
 
-window.addEventListener("resize", resize);
-document.addEventListener("fullscreenchange", resize);
-resize();
+const chars="01ABCDEFGHIJKLMNOPQRSTUVWXYZ\u03b1\u03b2\u03b3\u03b4\u03b5\u03b7\u03b8\u03ba\u03bb\u03bc\u03bd\u03be\u03c0\u03c1\u03c3\u03c4\u03c6\u03c7\u03c8\u03c9\u65e5\u6708\u706b\u6c34\u6728\u91d1\u571f\u30a2\u30a4\u30a6\u30a8\u30aa\u30ab\u30ad\u30af\u30b1\u30b3!@#$%^&*<>?".split("");
 
-const letters = (
-"01ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-"αβγδεζηθικλμνξοπρστυφχψω" +
-"日月火水木金土" +
-"アイウエオカキクケコサシスセソ" +
-"!@#$%^&*<>?/\\|"
-).split("");
-
-function draw() {
-    ctx.fillStyle = "rgba(0,0,0,0.06)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    ctx.fillStyle = "#00ff88";
-    ctx.font = fontSize + "px monospace";
-
-    for (let i=0;i<drops.length;i++) {
-        const text = letters[Math.floor(Math.random()*letters.length)];
-        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
-
-        if (drops[i]*fontSize > canvas.height && Math.random()>0.975)
-            drops[i]=0;
-
-        drops[i]+=0.9;
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.048)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<cols;i++){
+    const y=drops[i]*FS;
+    if(y<0){drops[i]+=0.7;continue;}
+    ctx.globalAlpha=0.9; ctx.fillStyle="#ffffff"; ctx.font=FS+"px monospace";
+    ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*FS,y);
+    ctx.globalAlpha=dropAlpha[i]*0.72; ctx.fillStyle=matrixColor;
+    ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*FS,y+FS);
+    ctx.globalAlpha=1;
+    drops[i]+=0.72;
+    if(y>canvas.height+FS*5&&Math.random()>0.978){
+      drops[i]=-(Math.random()*20+5);
+      dropAlpha[i]=0.5+Math.random()*0.5;
     }
+  }
 }
-setInterval(draw, 33);
+setInterval(draw,38);
 
-/* MINIGAMES */
-let active = null;
-let clicks = 0;
+/* ═══════════════════════════════════════
+   SCORE
+═══════════════════════════════════════ */
+let sigmaScore=0;
+function addScore(n){
+  sigmaScore+=n;
+  document.getElementById("scoreVal").textContent=sigmaScore;
+  showToast("+" + n + " SIGMA POINTS");
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+/* ═══════════════════════════════════════
+   GLITCH MODE (G key)
+═══════════════════════════════════════ */
+function triggerGlitch(){
+  playGlitchSound();
+  matrixColor="#ff0044";
+  const ov=document.getElementById("glitchOverlay");
+  ov.innerHTML="";
+  for(let i=0;i<12;i++){
+    const line=document.createElement("div");
+    line.className="glitch-line";
+    line.style.top=Math.random()*100+"%";
+    line.style.animationDelay=Math.random()*2+"s";
+    ov.appendChild(line);
+  }
+  for(let i=0;i<4;i++){
+    const bar=document.createElement("div");
+    bar.className="glitch-bar";
+    bar.style.top=Math.random()*100+"%";
+    bar.style.height=Math.floor(Math.random()*40+10)+"px";
+    ov.appendChild(bar);
+  }
+  ov.classList.add("active");
+  setTimeout(()=>{ ov.classList.remove("active"); matrixColor="#00ff88"; },3000);
+  showToast("GLITCH MODE ACTIVATED");
+}
+
+/* ═══════════════════════════════════════
+   VOID MODE (Konami Code)
+═══════════════════════════════════════ */
+const KONAMI=[38,38,40,40,37,39,37,39,66,65];
+let konamiIdx=0;
+let voidMode=false;
+document.addEventListener("keydown",e=>{
+  resetIdle();
+  if(e.key.toLowerCase()==="g") triggerGlitch();
+  if(e.keyCode===KONAMI[konamiIdx]){
+    konamiIdx++;
+    if(konamiIdx===KONAMI.length){
+      konamiIdx=0;
+      voidMode=!voidMode;
+      document.body.classList.toggle("void-mode",voidMode);
+      playGlitchSound();
+      showToast(voidMode?"VOID MODE ENGAGED":"VOID MODE RELEASED");
+      if(voidMode) addScore(100);
+    }
+  } else { konamiIdx=0; }
+});
+
+/* ═══════════════════════════════════════
+   IDLE TIMER
+═══════════════════════════════════════ */
+let idleTimer=null;
+const idleEl=document.getElementById("idleWarning");
+function resetIdle(){
+  idleEl.classList.remove("show");
+  matrixColor="#00ff88";
+  if(idleTimer) clearTimeout(idleTimer);
+  idleTimer=setTimeout(()=>{
+    idleEl.classList.add("show");
+    matrixColor="#ff4400";
+    termEl.innerHTML="&gt; WARNING: USER ABSENT";
+    beep(300,0.3,"sawtooth",0.05);
+  },30000);
+}
+resetIdle();
+
+/* ═══════════════════════════════════════
+   SECRET WORD
+═══════════════════════════════════════ */
+/* hidden span in body — invisible to normal users */
+const hiddenSpan=document.createElement("span");
+hiddenSpan.style.cssText="position:fixed;bottom:0;right:0;width:1px;height:1px;overflow:hidden;color:transparent;font-size:1px;user-select:none;";
+hiddenSpan.setAttribute("aria-hidden","true");
+hiddenSpan.textContent="sechssieben";
+document.body.appendChild(hiddenSpan);
+
+function closeSecret(){
+  document.getElementById("secretReveal").classList.remove("active");
+}
+
+/* ═══════════════════════════════════════
+   MODULES
+═══════════════════════════════════════ */
+let active=null,clicks=0,reactionTimer=null,reactionStart=null;
 
 function toggle(name){
-    const g = document.getElementById("gameArea");
-
-    if(active===name){
-        g.innerHTML="";
-        active=null;
-        return;
-    }
-
-    active=name;
-
-    if(name==="reaction"){
-        g.innerHTML="wait signal...";
-        setTimeout(()=>{
-            const t=Date.now();
-            g.innerHTML="CLICK!";
-            g.onclick=()=>{
-                g.innerHTML="reaction: "+(Date.now()-t)+"ms";
-            };
-        }, Math.random()*3000+1000);
-    }
-
-    if(name==="cipher"){
-        g.innerHTML=`
-        <div>01001011 01001111 01000100</div>
-        <input id="in" placeholder="decode"/>
-        <button onclick="check()">verify</button>
-        `;
-    }
-
-    if(name==="void"){
-        g.innerHTML=`clicks: <span id="c">0</span>`;
-        g.onclick=()=>{
-            clicks++;
-            document.getElementById("c").textContent=clicks;
-        };
-    }
+  const g=document.getElementById("gameArea");
+  if(active) document.getElementById("btn-"+active).classList.remove("active");
+  if(reactionTimer){clearTimeout(reactionTimer);reactionTimer=null;}
+  g.onclick=null;
+  if(active===name){g.innerHTML="";active=null;return;}
+  active=name;
+  document.getElementById("btn-"+name).classList.add("active");
+  if(name==="callsign") initCallsign(g);
+  else if(name==="reaction") initReaction(g);
+  else if(name==="typing") initTyping(g);
+  else if(name==="signal") initSignal(g);
+  else if(name==="hack") initHack(g);
+  else if(name==="cipher") initCipher(g);
+  else if(name==="void") initVoid(g);
 }
 
-function check(){
-    const v=document.getElementById("in").value.toUpperCase();
-    document.getElementById("gameArea").innerHTML =
-        v==="KOD" ? "ACCESS GRANTED" : "DENIED";
+/* ── CALLSIGN ── */
+function initCallsign(g){
+  g.innerHTML=`
+    <div style="font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:6px">enter operative callsign</div>
+    <div style="display:flex;gap:6px">
+      <input id="csIn" placeholder="CALLSIGN..." maxlength="16" autocomplete="off" style="flex:1"/>
+      <button onclick="setCallsign()" style="width:auto;padding:6px 12px">set</button>
+    </div>`;
+  document.getElementById("csIn").addEventListener("keydown",e=>{ if(e.key==="Enter") setCallsign(); });
+}
+function setCallsign(){
+  const v=(document.getElementById("csIn").value||"").toUpperCase().trim();
+  if(!v) return;
+  /* secret word easter egg */
+  if(v.toLowerCase()==="sechssieben"){
+    document.getElementById("secretReveal").classList.add("active");
+    playSuccess(); playSuccess();
+    addScore(500);
+    return;
+  }
+  document.getElementById("callsignDisplay").textContent="OPERATIVE: "+v;
+  playSuccess();
+  showToast("CALLSIGN SET: "+v);
+  addScore(10);
+}
+
+/* ── REACTION ── */
+function initReaction(g){
+  g.innerHTML="<span style='color:rgba(0,255,200,0.5)'>wait for signal...</span>";
+  reactionTimer=setTimeout(()=>{
+    reactionTimer=null;
+    reactionStart=Date.now();
+    beep(440,0.05,"square",0.12);
+    g.innerHTML='<div class="big-click">CLICK NOW</div>';
+    g.onclick=()=>{
+      const ms=Date.now()-reactionStart;
+      g.onclick=null;
+      const pts=ms<180?50:ms<260?25:ms<400?10:3;
+      const grade=ms<180?'<span class="result-ok">SIGMA TIER</span>':ms<260?'<span style="color:#ffcc00">DECENT</span>':'<span class="result-fail">TOO SLOW</span>';
+      playSuccess();
+      g.innerHTML=`<div>reaction: <b style="color:#fff;font-size:14px">${ms}ms</b></div><div style="margin-top:4px">${grade}</div>`;
+      addScore(pts);
+    };
+  },Math.random()*3000+1200);
+}
+
+/* ── TYPING TEST ── */
+const typingPrompts=[
+  "SIGMA NEVER STOPS","VOID IS ETERNAL","HACK THE SIGNAL","CORE SYSTEM ONLINE","GLITCH IS POWER"
+];
+function initTyping(g){
+  const prompt=typingPrompts[Math.floor(Math.random()*typingPrompts.length)];
+  let typed="", startTime=null, done=false;
+  function render(){
+    let html='<div class="type-target">';
+    for(let i=0;i<prompt.length;i++){
+      if(i<typed.length){
+        const ok=typed[i]===prompt[i];
+        html+=`<span class="${ok?"done":"wrong"}">${prompt[i]}</span>`;
+      } else if(i===typed.length){
+        html+=`<span class="current">${prompt[i]}</span>`;
+      } else {
+        html+=`<span style="color:rgba(255,255,255,0.3)">${prompt[i]}</span>`;
+      }
+    }
+    html+='</div>';
+    html+=`<input id="typIn" autocomplete="off" placeholder="start typing..." style="width:100%" maxlength="${prompt.length}"/>`;
+    g.innerHTML=html;
+    const inp=document.getElementById("typIn");
+    inp.focus();
+    inp.addEventListener("input",e=>{
+      if(done) return;
+      if(!startTime) startTime=Date.now();
+      typed=e.target.value.toUpperCase();
+      if(typed.length<=prompt.length) render();
+      if(typed.length===prompt.length){
+        done=true;
+        const secs=(Date.now()-startTime)/1000;
+        const wpm=Math.round((prompt.split(" ").length/secs)*60);
+        const acc=Math.round(typed.split("").filter((c,i)=>c===prompt[i]).length/prompt.length*100);
+        const pts=Math.round(wpm/2);
+        playSuccess();
+        g.innerHTML=`<div class="result-ok" style="font-size:12px">&gt; COMPLETE</div>
+          <div style="margin-top:6px">WPM: <b style="color:#fff">${wpm}</b> &nbsp; ACC: <b style="color:#fff">${acc}%</b></div>`;
+        addScore(pts);
+      }
+      inp.addEventListener("keydown",ke=>{ if(ke.key==="Backspace"){ typed=typed.slice(0,-1); render(); }});
+    });
+  }
+  render();
+}
+
+/* ── SIGNAL LOCK ── */
+function initSignal(g){
+  const codes=["SIG","K67","XOR","NULL","VOID","CORE"].sort(()=>Math.random()-.5).slice(0,4);
+  const sequence=[...codes].sort(()=>Math.random()-.5);
+  let step=0, playerSeq=[], lit=-1;
+  let phase="watch"; // watch → input
+
+  function showSeq(idx){
+    if(idx>=sequence.length){ phase="input"; render(); return; }
+    lit=codes.indexOf(sequence[idx]);
+    render();
+    beep(400+lit*80,0.1,"sine",0.1);
+    setTimeout(()=>{ lit=-1; render(); setTimeout(()=>showSeq(idx+1),400); },500);
+  }
+
+  function render(){
+    let html=`<div style="font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:6px">${phase==="watch"?"watch the sequence":"repeat the sequence"} [${step}/${sequence.length}]</div>`;
+    html+='<div class="signal-grid">';
+    codes.forEach((c,i)=>{
+      const isLit=i===lit;
+      html+=`<button class="signal-btn${isLit?" lit":""}" onclick="signalClick(${i})" style="pointer-events:${phase==="watch"?"none":"auto"}">${c}</button>`;
+    });
+    html+='</div>';
+    g.innerHTML=html;
+  }
+
+  window.signalClick=i=>{
+    if(phase!=="input") return;
+    beep(400+i*80,0.08,"sine",0.1);
+    if(codes[i]===sequence[step]){
+      step++;
+      playerSeq.push(i);
+      if(step===sequence.length){
+        playSuccess();
+        g.innerHTML='<div class="result-ok">&gt; SIGNAL LOCKED<br>sequence verified</div>';
+        addScore(40);
+      } else { lit=i; render(); setTimeout(()=>{lit=-1;render();},300); }
+    } else {
+      playFail();
+      const btn=g.querySelectorAll(".signal-btn")[i];
+      if(btn){ btn.classList.add("wrong-flash"); setTimeout(()=>btn.classList.remove("wrong-flash"),400); }
+      step=0; playerSeq=[];
+      setTimeout(()=>{ phase="watch"; step=0; showSeq(0); },600);
+    }
+  };
+
+  render();
+  setTimeout(()=>showSeq(0),600);
+}
+
+/* ── HACK SEQUENCE (Mastermind) ── */
+function initHack(g){
+  const secret=[0,1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5).slice(0,4);
+  let current=[];
+  let attempts=[];
+  const MAX=5;
+
+  function render(){
+    let html='<div style="font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:6px">crack the 4-digit code ['+( MAX-attempts.length)+' attempts left]</div>';
+    html+='<div class="hack-dots">';
+    for(let i=0;i<4;i++){
+      html+=`<div class="hack-dot${i<current.length?" filled":""}"></div>`;
+    }
+    html+='</div>';
+    attempts.forEach(a=>{
+      html+=`<div class="hack-attempt">[${a.guess.join("")}] &rarr; ${a.exact} exact, ${a.close} close</div>`;
+    });
+    html+='<div class="hack-numpad">';
+    for(let n=0;n<=9;n++){
+      html+=`<button onclick="hackInput(${n})" style="padding:5px 0;font-size:12px">${n}</button>`;
+    }
+    html+=`<button onclick="hackDel()" style="padding:5px 0;font-size:12px;grid-column:span 2;border-color:rgba(255,0,170,0.2);color:var(--magenta)">&larr;</button>`;
+    html+=`<button onclick="hackSubmit()" style="padding:5px 0;font-size:12px;grid-column:span 3;border-color:rgba(0,255,200,0.4)">&gt; submit</button>`;
+    html+='</div>';
+    g.innerHTML=html;
+  }
+
+  window.hackInput=n=>{
+    if(current.length<4){ current.push(n); beep(300+n*40,0.04,"square",0.05); render(); }
+  };
+  window.hackDel=()=>{ if(current.length) current.pop(); render(); };
+  window.hackSubmit=()=>{
+    if(current.length<4) return;
+    let exact=0,close=0;
+    const sc=[...secret], cc=[...current];
+    sc.forEach((v,i)=>{ if(v===cc[i]){exact++;sc[i]=cc[i]=-1;} });
+    sc.forEach((v,i)=>{ if(v===-1) return; const j=cc.indexOf(v); if(j!==-1){close++;cc[j]=-1;} });
+    attempts.push({guess:[...current],exact,close});
+    if(exact===4){
+      playSuccess();
+      g.innerHTML='<div class="result-ok" style="font-size:12px">&gt; CODE CRACKED<br><b style="color:#fff">'+secret.join("")+'</b></div>';
+      addScore(60);return;
+    }
+    if(attempts.length>=MAX){
+      playFail();
+      g.innerHTML='<div class="result-fail">&gt; ACCESS DENIED<br>code was: <b style="color:#fff">'+secret.join("")+'</b></div>';
+      return;
+    }
+    playClick(); current=[]; render();
+  };
+  render();
+}
+
+/* ── CIPHER ── */
+function initCipher(g){
+  const challenges=[
+    {bin:"01001011 01001111 01000100", ans:"KOD", label:"LVL 1 // 3 BYTES"},
+    {bin:"01110011 01101001 01100111 01101101 01100001", ans:"SIGMA", label:"LVL 2 // 5 BYTES"},
+    {bin:"01100111 01101100 01101001 01110100 01100011 01101000", ans:"GLITCH", label:"LVL 3 // 6 BYTES"},
+    {bin:"01110011 01100101 01100011 01101000 01110011 01110011 01101001 01100101 01100010 01100101 01101110", ans:"SECHSSIEBEN", label:"LVL 4 // 11 BYTES — final cipher"}
+  ];
+  let level=0;
+
+  function renderCipher(){
+    const c=challenges[level];
+    g.innerHTML=`<div class="cipher-wrap">
+      <div class="cipher-hint">${c.label}</div>
+      <div class="cipher-code">${c.bin}</div>
+      <div class="cipher-row">
+        <input id="cIn" placeholder="decoded text..." autocomplete="off" spellcheck="false"/>
+        <button class="verify-btn" onclick="checkCipher()">verify</button>
+      </div>
+      <div id="cResult" style="min-height:16px;font-size:11px"></div>
+      ${level>0?'<div style="font-size:10px;color:rgba(0,255,200,0.3)">solved: '+challenges.slice(0,level).map(x=>x.ans).join(" &rarr; ")+'</div>':''}
+    </div>`;
+    document.getElementById("cIn").addEventListener("keydown",e=>{ if(e.key==="Enter") checkCipher(); });
+  }
+
+  window.checkCipher=()=>{
+    const val=(document.getElementById("cIn").value||"").toUpperCase().trim();
+    const r=document.getElementById("cResult");
+    if(val===challenges[level].ans){
+      level++;
+      if(level>=challenges.length){
+        playSuccess(); playSuccess(); playSuccess();
+        document.getElementById("secretReveal").classList.add("active");
+        addScore(200);
+        g.innerHTML='<div class="result-ok" style="font-size:12px">&gt; ALL LAYERS DECODED<br>CLASSIFIED ACCESS GRANTED</div>';
+      } else {
+        playSuccess(); r.innerHTML='<span class="result-ok">&gt; correct. next cipher...</span>';
+        addScore(30);
+        setTimeout(renderCipher,900);
+      }
+    } else {
+      playFail();
+      r.innerHTML='<span class="result-fail">&gt; wrong. retry.</span>';
+      const inp=document.getElementById("cIn");
+      if(inp){ inp.style.borderColor="var(--magenta)"; setTimeout(()=>{ if(inp) inp.style.borderColor="rgba(0,255,200,0.3)"; },600); }
+    }
+  };
+  renderCipher();
+}
+
+/* ── VOID CLICKER ── */
+function initVoid(g){
+  clicks=0;
+  g.innerHTML=`<div class="void-label">void clicks</div><div class="void-count" id="c">0</div><div style="margin-top:6px;font-size:10px;color:rgba(0,255,200,0.3);min-height:14px" id="vMsg"></div>`;
+  const milestones={10:"not bad.",50:"keep going.",100:"sigma energy.",200:"you are the void.",500:"TRANSCENDED"};
+  g.onclick=()=>{
+    clicks++;
+    document.getElementById("c").textContent=clicks;
+    if(clicks%10===0) beep(200+clicks,0.05,"sine",0.05);
+    if(milestones[clicks]){
+      document.getElementById("vMsg").innerHTML='<span class="result-ok">'+milestones[clicks]+'</span>';
+      addScore(clicks);
+      playSuccess();
+    }
+  };
 }
 </script>
-
 </body>
 </html>

@@ -3,26 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>sigma67 // CORE</title>
+<title>SIGMA 67 // CORE SYSTEM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
 body {
     margin: 0;
     height: 100vh;
     overflow: hidden;
-    background: #000;
-    font-family: Arial, sans-serif;
+    background: black;
+    font-family: "Orbitron", sans-serif;
     color: white;
 }
 
-/* MATRIX PARTICLES BACKGROUND */
+/* MATRIX */
 canvas {
     position: absolute;
     inset: 0;
     z-index: 0;
 }
 
-/* CENTRAL ZONE */
+/* FLASH */
+.flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    animation: flash 6s infinite;
+}
+@keyframes flash {
+    0%, 97%, 100% { opacity: 0; }
+    98% { opacity: 0.15; }
+}
+
+/* CENTER */
 .wrapper {
     position: relative;
     z-index: 2;
@@ -34,109 +50,99 @@ canvas {
     text-align: center;
     animation: flicker 2s infinite;
 }
-
 @keyframes flicker {
     0%,100% { opacity: 1; }
     50% { opacity: 0.6; }
-    52% { opacity: 0.9; }
 }
 
-/* SIGMA TITLE */
 h1 {
-    font-size: 90px;
-    letter-spacing: 18px;
-    text-transform: uppercase;
-    position: relative;
+    font-size: 100px;
+    letter-spacing: 22px;
+    text-shadow: 0 0 10px cyan, 0 0 25px magenta, 0 0 40px #00ff88;
     animation: shake 0.15s infinite;
 }
-
 @keyframes shake {
     0% { transform: translate(0,0); }
-    25% { transform: translate(-3px,2px); }
     50% { transform: translate(3px,-2px); }
-    75% { transform: translate(-2px,-3px); }
     100% { transform: translate(0,0); }
 }
 
-h1::before,
-h1::after {
-    content: "sigma 67";
-    position: absolute;
-    left: 0;
-    width: 100%;
-}
-
-h1::before {
-    color: red;
-    transform: translate(-5px, 3px);
-    clip-path: inset(0 0 55% 0);
-}
-
-h1::after {
-    color: cyan;
-    transform: translate(5px, -3px);
-    clip-path: inset(45% 0 0 0);
-}
-
 /* LINKS */
-.links {
-    margin-top: 40px;
-}
-
-a {
+.links a {
     display: block;
     margin: 10px;
-    font-size: 22px;
-    letter-spacing: 4px;
+    font-family: "Share Tech Mono", monospace;
+    color: #00ffcc;
     text-decoration: none;
-    color: white;
-    transition: 0.2s;
-    filter: blur(0.6px);
+    letter-spacing: 3px;
 }
-
-a:hover {
-    transform: scale(1.6) rotate(-4deg);
-    text-shadow: 0 0 10px cyan, 0 0 20px magenta;
-    filter: blur(0px);
+.links a:hover {
+    transform: scale(1.4) rotate(-3deg);
+    text-shadow: 0 0 10px cyan;
 }
 
 /* TERMINAL */
 .terminal {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
-    font-size: 12px;
-    color: #00ff88;
+    bottom: 15px;
+    right: 15px;
     font-family: monospace;
+    font-size: 11px;
+    color: #00ff88;
     opacity: 0.7;
-}
-
-/* GLITCH FLASH */
-.flash {
-    position: absolute;
-    inset: 0;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    animation: flash 6s infinite;
-}
-
-@keyframes flash {
-    0%, 97%, 100% { opacity: 0; }
-    98% { opacity: 0.15; }
-    99% { opacity: 0; }
 }
 
 /* CURSOR */
 .cursor {
     position: fixed;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     background: cyan;
     border-radius: 50%;
     mix-blend-mode: difference;
     pointer-events: none;
-    z-index: 3;
+}
+
+/* CORE PANEL */
+.core-panel {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 260px;
+    padding: 12px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(0,255,200,0.3);
+    font-family: "Share Tech Mono", monospace;
+    color: #00ffcc;
+    z-index: 5;
+    backdrop-filter: blur(6px);
+}
+
+.core-title {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.core-panel button {
+    width: 100%;
+    margin: 4px 0;
+    background: transparent;
+    border: 1px solid rgba(0,255,200,0.2);
+    color: #00ffcc;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    text-align: left;
+}
+
+.core-panel button:hover {
+    background: rgba(0,255,200,0.1);
+}
+
+#gameArea {
+    margin-top: 10px;
+    min-height: 70px;
+    font-size: 11px;
 }
 </style>
 </head>
@@ -145,22 +151,29 @@ a:hover {
 
 <canvas id="matrix"></canvas>
 <div class="flash"></div>
+<div class="cursor" id="cursor"></div>
 
 <div class="wrapper">
     <h1>SIGMA 67</h1>
 
     <div class="links">
-        <a href="https://www.tiktok.com/@thesteve2017" target="_blank">TT NODE</a>
-        <a href="https://soundcloud.com/stxve17" target="_blank">SC STREAM</a>
-        <a href="https://selbsthilfe-hier-buchen.webnode.page/" target="_blank">UNKNOWN ACCESS</a>
+        <a href="https://www.tiktok.com/@thesteve2017">TT NODE</a>
+        <a href="https://soundcloud.com/stxve17">SC STREAM</a>
+        <a href="https://selbsthilfe-hier-buchen.webnode.page/">UNKNOWN ACCESS</a>
     </div>
 </div>
 
-<div class="terminal" id="terminal">
-> booting sigma-core...
-</div>
+<div class="terminal" id="terminal">> booting core system...</div>
 
-<div class="cursor" id="cursor"></div>
+<div class="core-panel" id="corePanel">
+    <div class="core-title">SIGMA CORE // MODULES</div>
+
+    <button onclick="toggleGame('reaction')">> reaction test</button>
+    <button onclick="toggleGame('cipher')">> cipher unlock</button>
+    <button onclick="toggleGame('void')">> void clicker</button>
+
+    <div id="gameArea"></div>
+</div>
 
 <script>
 /* CURSOR */
@@ -170,54 +183,104 @@ document.addEventListener("mousemove", e => {
     c.style.top = e.clientY + "px";
 });
 
-/* TERMINAL TEXT LOOP */
+/* TERMINAL */
 const lines = [
-    "> syncing reality...",
-    "> loading alpha mindset...",
-    "> deleting weakness...",
-    "> sigma status: ACTIVE",
-    "> emotional suppression: ON"
+"> syncing reality...",
+"> loading sigma core...",
+"> glyph engine active",
+"> emotional suppression ON",
+"> system unstable"
 ];
 
-let i = 0;
 setInterval(() => {
-    document.getElementById("terminal").textContent = lines[i % lines.length];
-    i++;
+    document.getElementById("terminal").textContent =
+        lines[Math.floor(Math.random() * lines.length)];
 }, 1200);
 
-/* MATRIX RAIN */
+/* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const letters = "01SIGMAALPHAOMEGACHAD".split("");
+const letters = (
+"01ABCDEFGHIJKLMNOPQRSTUVWXYZαβγδεζηθικλμνξοπρστυφχψω" +
+"日月火水木金土アイウエオカキクケコサシスセソ" +
+"!@#$%^&*<>?/\\|"
+).split("");
+
 const fontSize = 14;
 const columns = canvas.width / fontSize;
-
 const drops = Array(Math.floor(columns)).fill(1);
 
 function draw() {
-    ctx.fillStyle = "rgba(0,0,0,0.08)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(0,0,0,0.06)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
     ctx.fillStyle = "#00ff88";
     ctx.font = fontSize + "px monospace";
 
-    for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    for (let i=0;i<drops.length;i++) {
+        const text = letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-        }
+        if (drops[i]*fontSize > canvas.height && Math.random()>0.97)
+            drops[i]=0;
 
-        drops[i]++;
+        drops[i]+=0.8;
+    }
+}
+setInterval(draw, 33);
+
+/* GAMES */
+let active = null;
+let clicks = 0;
+
+function toggleGame(name){
+    const area = document.getElementById("gameArea");
+
+    if(active===name){
+        area.innerHTML="";
+        active=null;
+        return;
+    }
+
+    active=name;
+
+    if(name==="reaction"){
+        area.innerHTML="wait...";
+        setTimeout(()=>{
+            const start=Date.now();
+            area.innerHTML="CLICK!";
+            area.onclick=()=>{
+                area.innerHTML="reaction: "+(Date.now()-start)+"ms";
+            };
+        }, Math.random()*3000+1000);
+    }
+
+    if(name==="cipher"){
+        area.innerHTML=`
+        <div>01001011 01001111 01000100</div>
+        <input id="c" placeholder="decode"/>
+        <button onclick="check()">verify</button>
+        `;
+    }
+
+    if(name==="void"){
+        area.innerHTML=`<div>clicks: <span id="v">0</span></div>`;
+        area.onclick=()=>{
+            clicks++;
+            document.getElementById("v").textContent=clicks;
+        };
     }
 }
 
-setInterval(draw, 33);
+function check(){
+    const v=document.getElementById("c").value.toUpperCase();
+    document.getElementById("gameArea").innerHTML =
+        v==="KOD" ? "ACCESS GRANTED" : "DENIED";
+}
 </script>
 
 </body>

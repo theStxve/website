@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sigma67</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* Hintergrund-Noise / Chaos */
+body::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        0deg,
+        #ff00ff 0px,
+        #00ffff 2px,
+        #000 4px
+    );
+    animation: glitchBg 0.2s infinite;
+    opacity: 0.15;
+}
+
+@keyframes glitchBg {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-5px,3px); }
+    50% { transform: translate(5px,-3px); }
+    75% { transform: translate(-3px,-5px); }
+    100% { transform: translate(0,0); }
+}
+
+/* Haupttitel */
+h1 {
+    font-size: 60px;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    position: relative;
+    animation: glitch 1s infinite;
+}
+
+@keyframes glitch {
+    0% { text-shadow: 2px 2px red, -2px -2px cyan; }
+    25% { text-shadow: -2px 2px magenta, 2px -2px lime; }
+    50% { text-shadow: 2px -2px blue, -2px 2px red; }
+    75% { text-shadow: -3px -3px yellow, 3px 3px cyan; }
+    100% { text-shadow: 2px 2px red, -2px -2px cyan; }
+}
+
+/* Links */
+.links {
+    margin-top: 30px;
+    text-align: center;
+}
+
+a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 10px;
+    font-size: 20px;
+    transition: 0.2s;
+    filter: blur(0.5px);
+}
+
+a:hover {
+    transform: scale(1.3) rotate(2deg);
+    color: #ff00ff;
+    text-shadow: 0 0 10px cyan;
+    filter: blur(0px);
+}
+</style>
+
+</head>
+
+<body>
+
+<div>
+    <h1>sigma67</h1>
+
+    <div class="links">
+        <a href="https://www.tiktok.com/@thesteve2017" target="_blank">TikTok</a>
+        <a href="https://open.spotify.com/intl-de/artist/6PFmHjNQRtdGAKw7Uyd5qO" target="_blank">Spotify</a>
+        <a href="https://selbsthilfe-hier-buchen.webnode.page/" target="_blank">Überraschung</a>
+    </div>
+</div>
+
+</body>
+</html>

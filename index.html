@@ -3,79 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>sigma67.exe</title>
+<title>sigma67 // CORE</title>
 
 <style>
 body {
     margin: 0;
     height: 100vh;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background: #000;
     font-family: Arial, sans-serif;
     color: white;
 }
 
-/* ULTRA CHAOS BACKGROUND */
-.bg {
-    position: absolute;
-    inset: -50%;
-    background: conic-gradient(
-        from 0deg,
-        #ff00ff,
-        #00ffff,
-        #000,
-        #ff00ff
-    );
-    animation: spin 3s linear infinite;
-    opacity: 0.12;
-    filter: blur(40px);
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg) scale(1.2); }
-    to { transform: rotate(360deg) scale(1.2); }
-}
-
-/* static noise layer */
-.noise {
+/* MATRIX PARTICLES BACKGROUND */
+canvas {
     position: absolute;
     inset: 0;
-    background: url("https://upload.wikimedia.org/wikipedia/commons/5/5c/Image_gaussian_noise_example.png");
-    opacity: 0.08;
-    mix-blend-mode: overlay;
-    pointer-events: none;
+    z-index: 0;
 }
 
-/* center */
+/* CENTRAL ZONE */
 .wrapper {
+    position: relative;
     z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    animation: flicker 1.8s infinite;
+    animation: flicker 2s infinite;
 }
 
 @keyframes flicker {
     0%,100% { opacity: 1; }
-    50% { opacity: 0.7; }
-    55% { opacity: 0.4; }
+    50% { opacity: 0.6; }
+    52% { opacity: 0.9; }
 }
 
-/* TITLE */
+/* SIGMA TITLE */
 h1 {
-    font-size: 80px;
-    letter-spacing: 15px;
+    font-size: 90px;
+    letter-spacing: 18px;
     text-transform: uppercase;
     position: relative;
-    animation: shake 0.2s infinite;
+    animation: shake 0.15s infinite;
 }
 
 @keyframes shake {
     0% { transform: translate(0,0); }
-    25% { transform: translate(-2px,2px); }
-    50% { transform: translate(2px,-2px); }
-    75% { transform: translate(-2px,-1px); }
+    25% { transform: translate(-3px,2px); }
+    50% { transform: translate(3px,-2px); }
+    75% { transform: translate(-2px,-3px); }
     100% { transform: translate(0,0); }
 }
 
@@ -89,14 +68,14 @@ h1::after {
 
 h1::before {
     color: red;
-    transform: translate(-4px, 2px);
-    clip-path: inset(0 0 50% 0);
+    transform: translate(-5px, 3px);
+    clip-path: inset(0 0 55% 0);
 }
 
 h1::after {
     color: cyan;
-    transform: translate(4px, -2px);
-    clip-path: inset(50% 0 0 0);
+    transform: translate(5px, -3px);
+    clip-path: inset(45% 0 0 0);
 }
 
 /* LINKS */
@@ -106,61 +85,139 @@ h1::after {
 
 a {
     display: block;
-    margin: 12px;
+    margin: 10px;
     font-size: 22px;
-    color: white;
-    text-decoration: none;
     letter-spacing: 4px;
+    text-decoration: none;
+    color: white;
     transition: 0.2s;
-    filter: blur(0.5px);
+    filter: blur(0.6px);
 }
 
 a:hover {
-    transform: scale(1.5) rotate(-3deg);
-    color: #00ffff;
-    text-shadow:
-        0 0 10px #ff00ff,
-        0 0 20px #00ffff,
-        0 0 40px #ff00ff;
+    transform: scale(1.6) rotate(-4deg);
+    text-shadow: 0 0 10px cyan, 0 0 20px magenta;
     filter: blur(0px);
 }
 
-/* cursor glitch trail */
+/* TERMINAL */
+.terminal {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 12px;
+    color: #00ff88;
+    font-family: monospace;
+    opacity: 0.7;
+}
+
+/* GLITCH FLASH */
+.flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    animation: flash 6s infinite;
+}
+
+@keyframes flash {
+    0%, 97%, 100% { opacity: 0; }
+    98% { opacity: 0.15; }
+    99% { opacity: 0; }
+}
+
+/* CURSOR */
 .cursor {
     position: fixed;
-    width: 10px;
-    height: 10px;
-    background: #00ffff;
+    width: 12px;
+    height: 12px;
+    background: cyan;
     border-radius: 50%;
-    pointer-events: none;
     mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 3;
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
-<div class="noise"></div>
+<canvas id="matrix"></canvas>
+<div class="flash"></div>
 
 <div class="wrapper">
-    <h1>sigma 67</h1>
+    <h1>SIGMA 67</h1>
 
     <div class="links">
-        <a href="https://www.tiktok.com/@thesteve2017">TikTok</a>
-        <a href="https://soundcloud.com/stxve17">SoundCloud</a>
-        <a href="https://selbsthilfe-hier-buchen.webnode.page/">UNKNOWN</a>
+        <a href="https://www.tiktok.com/@thesteve2017" target="_blank">TT NODE</a>
+        <a href="https://soundcloud.com/stxve17" target="_blank">SC STREAM</a>
+        <a href="https://selbsthilfe-hier-buchen.webnode.page/" target="_blank">UNKNOWN ACCESS</a>
     </div>
+</div>
+
+<div class="terminal" id="terminal">
+> booting sigma-core...
 </div>
 
 <div class="cursor" id="cursor"></div>
 
 <script>
+/* CURSOR */
 document.addEventListener("mousemove", e => {
     const c = document.getElementById("cursor");
     c.style.left = e.clientX + "px";
     c.style.top = e.clientY + "px";
 });
+
+/* TERMINAL TEXT LOOP */
+const lines = [
+    "> syncing reality...",
+    "> loading alpha mindset...",
+    "> deleting weakness...",
+    "> sigma status: ACTIVE",
+    "> emotional suppression: ON"
+];
+
+let i = 0;
+setInterval(() => {
+    document.getElementById("terminal").textContent = lines[i % lines.length];
+    i++;
+}, 1200);
+
+/* MATRIX RAIN */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "01SIGMAALPHAOMEGACHAD".split("");
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+
+const drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff88";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
+}
+
+setInterval(draw, 33);
 </script>
 
 </body>

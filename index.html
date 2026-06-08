@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SIGMA 67 // CORE SYSTEM</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -17,16 +17,16 @@ body {
     color: white;
 }
 
-/* MATRIX */
+/* MATRIX CANVAS */
 canvas {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 0;
 }
 
 /* FLASH */
 .flash {
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: white;
     opacity: 0;
@@ -48,23 +48,12 @@ canvas {
     justify-content: center;
     align-items: center;
     text-align: center;
-    animation: flicker 2s infinite;
-}
-@keyframes flicker {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.6; }
 }
 
 h1 {
     font-size: 100px;
     letter-spacing: 22px;
     text-shadow: 0 0 10px cyan, 0 0 25px magenta, 0 0 40px #00ff88;
-    animation: shake 0.15s infinite;
-}
-@keyframes shake {
-    0% { transform: translate(0,0); }
-    50% { transform: translate(3px,-2px); }
-    100% { transform: translate(0,0); }
 }
 
 /* LINKS */
@@ -74,22 +63,21 @@ h1 {
     font-family: "Share Tech Mono", monospace;
     color: #00ffcc;
     text-decoration: none;
-    letter-spacing: 3px;
 }
 .links a:hover {
-    transform: scale(1.4) rotate(-3deg);
-    text-shadow: 0 0 10px cyan;
+    transform: scale(1.3) rotate(-3deg);
 }
 
 /* TERMINAL */
 .terminal {
-    position: absolute;
+    position: fixed;
     bottom: 15px;
     right: 15px;
     font-family: monospace;
     font-size: 11px;
     color: #00ff88;
-    opacity: 0.7;
+    opacity: 0.8;
+    z-index: 5;
 }
 
 /* CURSOR */
@@ -101,20 +89,21 @@ h1 {
     border-radius: 50%;
     mix-blend-mode: difference;
     pointer-events: none;
+    z-index: 10;
 }
 
 /* CORE PANEL */
 .core-panel {
-    position: absolute;
+    position: fixed;
     bottom: 15px;
     left: 15px;
-    width: 260px;
+    width: 280px;
     padding: 12px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     border: 1px solid rgba(0,255,200,0.3);
     font-family: "Share Tech Mono", monospace;
     color: #00ffcc;
-    z-index: 5;
+    z-index: 6;
     backdrop-filter: blur(6px);
 }
 
@@ -123,7 +112,7 @@ h1 {
     margin-bottom: 8px;
 }
 
-.core-panel button {
+button {
     width: 100%;
     margin: 4px 0;
     background: transparent;
@@ -135,7 +124,7 @@ h1 {
     text-align: left;
 }
 
-.core-panel button:hover {
+button:hover {
     background: rgba(0,255,200,0.1);
 }
 
@@ -163,14 +152,14 @@ h1 {
     </div>
 </div>
 
-<div class="terminal" id="terminal">> booting core system...</div>
+<div class="terminal" id="terminal">> booting core...</div>
 
-<div class="core-panel" id="corePanel">
+<div class="core-panel">
     <div class="core-title">SIGMA CORE // MODULES</div>
 
-    <button onclick="toggleGame('reaction')">> reaction test</button>
-    <button onclick="toggleGame('cipher')">> cipher unlock</button>
-    <button onclick="toggleGame('void')">> void clicker</button>
+    <button onclick="toggle('reaction')">> reaction test</button>
+    <button onclick="toggle('cipher')">> cipher unlock</button>
+    <button onclick="toggle('void')">> void clicker</button>
 
     <div id="gameArea"></div>
 </div>
@@ -186,33 +175,44 @@ document.addEventListener("mousemove", e => {
 /* TERMINAL */
 const lines = [
 "> syncing reality...",
-"> loading sigma core...",
-"> glyph engine active",
-"> emotional suppression ON",
+"> sigma core active",
+"> glyph engine loaded",
+"> emotion layer OFF",
 "> system unstable"
 ];
 
 setInterval(() => {
     document.getElementById("terminal").textContent =
-        lines[Math.floor(Math.random() * lines.length)];
+        lines[Math.floor(Math.random()*lines.length)];
 }, 1200);
 
-/* MATRIX */
+/* MATRIX FIXED FULLSCREEN */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const fontSize = 14;
+let columns;
+let drops;
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    columns = Math.floor(canvas.width / fontSize);
+    drops = Array(columns).fill(1);
+}
+
+window.addEventListener("resize", resize);
+document.addEventListener("fullscreenchange", resize);
+resize();
 
 const letters = (
-"01ABCDEFGHIJKLMNOPQRSTUVWXYZαβγδεζηθικλμνξοπρστυφχψω" +
-"日月火水木金土アイウエオカキクケコサシスセソ" +
+"01ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+"αβγδεζηθικλμνξοπρστυφχψω" +
+"日月火水木金土" +
+"アイウエオカキクケコサシスセソ" +
 "!@#$%^&*<>?/\\|"
 ).split("");
-
-const fontSize = 14;
-const columns = canvas.width / fontSize;
-const drops = Array(Math.floor(columns)).fill(1);
 
 function draw() {
     ctx.fillStyle = "rgba(0,0,0,0.06)";
@@ -225,23 +225,23 @@ function draw() {
         const text = letters[Math.floor(Math.random()*letters.length)];
         ctx.fillText(text, i*fontSize, drops[i]*fontSize);
 
-        if (drops[i]*fontSize > canvas.height && Math.random()>0.97)
+        if (drops[i]*fontSize > canvas.height && Math.random()>0.975)
             drops[i]=0;
 
-        drops[i]+=0.8;
+        drops[i]+=0.9;
     }
 }
 setInterval(draw, 33);
 
-/* GAMES */
+/* MINIGAMES */
 let active = null;
 let clicks = 0;
 
-function toggleGame(name){
-    const area = document.getElementById("gameArea");
+function toggle(name){
+    const g = document.getElementById("gameArea");
 
     if(active===name){
-        area.innerHTML="";
+        g.innerHTML="";
         active=null;
         return;
     }
@@ -249,35 +249,35 @@ function toggleGame(name){
     active=name;
 
     if(name==="reaction"){
-        area.innerHTML="wait...";
+        g.innerHTML="wait signal...";
         setTimeout(()=>{
-            const start=Date.now();
-            area.innerHTML="CLICK!";
-            area.onclick=()=>{
-                area.innerHTML="reaction: "+(Date.now()-start)+"ms";
+            const t=Date.now();
+            g.innerHTML="CLICK!";
+            g.onclick=()=>{
+                g.innerHTML="reaction: "+(Date.now()-t)+"ms";
             };
         }, Math.random()*3000+1000);
     }
 
     if(name==="cipher"){
-        area.innerHTML=`
+        g.innerHTML=`
         <div>01001011 01001111 01000100</div>
-        <input id="c" placeholder="decode"/>
+        <input id="in" placeholder="decode"/>
         <button onclick="check()">verify</button>
         `;
     }
 
     if(name==="void"){
-        area.innerHTML=`<div>clicks: <span id="v">0</span></div>`;
-        area.onclick=()=>{
+        g.innerHTML=`clicks: <span id="c">0</span>`;
+        g.onclick=()=>{
             clicks++;
-            document.getElementById("v").textContent=clicks;
+            document.getElementById("c").textContent=clicks;
         };
     }
 }
 
 function check(){
-    const v=document.getElementById("c").value.toUpperCase();
+    const v=document.getElementById("in").value.toUpperCase();
     document.getElementById("gameArea").innerHTML =
         v==="KOD" ? "ACCESS GRANTED" : "DENIED";
 }

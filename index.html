@@ -11,7 +11,11 @@
   --cyan:#00ffcc;--magenta:#ff00aa;--green:#00ff88;
   --border:rgba(0,255,200,0.25);--bg:rgba(0,0,0,0.8);
 }
-body{height:100vh;overflow:hidden;background:#000;font-family:"Orbitron",sans-serif;color:#fff;cursor:none;}
+
+/* ── MOBILE: cursor normal ── */
+body{height:100vh;overflow:hidden;background:#000;font-family:"Orbitron",sans-serif;color:#fff;}
+@media (pointer:fine){ body{ cursor:none; } }
+
 canvas{position:fixed;inset:0;z-index:0;}
 .scanlines{position:fixed;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;}
 .vignette{position:fixed;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,0.75) 100%);pointer-events:none;}
@@ -31,13 +35,10 @@ canvas{position:fixed;inset:0;z-index:0;}
 body.void-mode{filter:invert(1) hue-rotate(180deg);}
 body.void-mode canvas{filter:invert(1);}
 
-/* ALERT MODE — matrix turns red */
-body.alert-mode #matrixColor{--mcolor:#ff0044;}
-
-.wrapper{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:28px;}
+.wrapper{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:28px;padding:0 16px;}
 
 h1{
-  font-size:clamp(48px,9vw,108px);font-weight:900;letter-spacing:0.18em;color:#fff;
+  font-size:clamp(36px,9vw,108px);font-weight:900;letter-spacing:0.18em;color:#fff;
   text-shadow:0 0 8px var(--cyan),0 0 22px var(--cyan),0 0 55px rgba(0,255,200,0.35);
   animation:titlePulse 4s ease-in-out infinite,glitch 7s infinite;position:relative;
 }
@@ -56,42 +57,62 @@ h1::after{color:var(--cyan);animation:glitchBot 7s infinite;clip-path:polygon(0 
 .subtitle{font-family:"Share Tech Mono",monospace;font-size:11px;letter-spacing:0.4em;color:rgba(0,255,200,0.45);margin-top:-10px;}
 #callsignDisplay{font-family:"Share Tech Mono",monospace;font-size:10px;letter-spacing:0.25em;color:rgba(0,255,200,0.6);margin-top:-20px;min-height:14px;}
 
-.status-bar{display:flex;gap:20px;font-family:"Share Tech Mono",monospace;font-size:10px;color:rgba(0,255,200,0.45);letter-spacing:0.2em;}
+.status-bar{display:flex;gap:20px;font-family:"Share Tech Mono",monospace;font-size:10px;color:rgba(0,255,200,0.45);letter-spacing:0.2em;flex-wrap:wrap;justify-content:center;}
 .status-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1.8s infinite;vertical-align:middle;margin-right:5px;}
 .status-dot.red{background:var(--magenta);box-shadow:0 0 6px var(--magenta);animation-delay:.6s;}
 .status-dot.yellow{background:#ffcc00;box-shadow:0 0 6px #ffcc00;animation-delay:1.2s;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
 
-/* SIGMA SCORE */
 .sigma-score{font-family:"Share Tech Mono",monospace;font-size:11px;color:rgba(0,255,200,0.5);letter-spacing:0.2em;}
 #scoreVal{color:#fff;font-size:13px;font-weight:700;text-shadow:0 0 8px var(--cyan);}
 
-.links{display:flex;gap:14px;}
+.links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
 .links a{font-family:"Share Tech Mono",monospace;font-size:13px;color:#fff;text-decoration:none;letter-spacing:0.12em;padding:10px 22px;border:1px solid rgba(0,255,200,0.45);background:rgba(0,0,0,0.55);transition:all 0.15s ease;backdrop-filter:blur(4px);}
-.links a:hover{border-color:var(--cyan);color:#000;background:var(--cyan);text-shadow:none;box-shadow:0 0 20px rgba(0,255,200,0.4);}
+.links a:hover,.links a:focus{border-color:var(--cyan);color:#000;background:var(--cyan);text-shadow:none;box-shadow:0 0 20px rgba(0,255,200,0.4);outline:none;}
 
-/* CURSOR */
-.cursor-outer{position:fixed;width:28px;height:28px;border:1px solid rgba(0,255,200,0.55);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .12s,height .12s,border-color .12s;}
-.cursor-inner{position:fixed;width:4px;height:4px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 6px var(--cyan);}
-/* CURSOR TRAIL */
-.trail-dot{position:fixed;width:3px;height:3px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:opacity .4s;}
+/* CURSOR – nur für Maus-Geräte einblenden */
+.cursor-outer,.cursor-inner,.trail-dot{display:none;}
+@media (pointer:fine){
+  .cursor-outer{display:block;position:fixed;width:28px;height:28px;border:1px solid rgba(0,255,200,0.55);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .12s,height .12s,border-color .12s;}
+  .cursor-inner{display:block;position:fixed;width:4px;height:4px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 6px var(--cyan);}
+  .trail-dot{display:block;position:fixed;width:3px;height:3px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:opacity .4s;}
+}
 
 .terminal{position:fixed;bottom:18px;right:18px;font-family:"Share Tech Mono",monospace;font-size:11px;color:var(--green);opacity:0.7;z-index:6;letter-spacing:0.05em;}
 .terminal::after{content:'_';animation:blink 1s infinite;}
 
-.core-panel{position:fixed;bottom:18px;left:18px;width:320px;padding:16px;background:var(--bg);border:1px solid var(--border);font-family:"Share Tech Mono",monospace;color:var(--cyan);z-index:6;backdrop-filter:blur(10px);}
+/* CORE PANEL – responsive */
+.core-panel{position:fixed;bottom:0;left:0;width:320px;max-width:100%;padding:16px;background:var(--bg);border:1px solid var(--border);font-family:"Share Tech Mono",monospace;color:var(--cyan);z-index:6;backdrop-filter:blur(10px);transition:transform .3s ease;}
 .core-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.45;}
 .core-title{font-size:10px;letter-spacing:0.3em;color:rgba(0,255,200,0.45);margin-bottom:12px;}
 .btn-row{display:flex;flex-direction:column;gap:3px;}
 
-button{width:100%;background:transparent;border:1px solid rgba(0,255,200,0.15);color:var(--cyan);padding:7px 10px;cursor:none;font-size:11px;font-family:"Share Tech Mono",monospace;text-align:left;letter-spacing:0.05em;transition:all .12s;}
+/* Mobile: panel collapsed by default, toggle button */
+.panel-toggle{display:none;}
+@media (max-width:600px){
+  .terminal{display:none;}
+  .core-panel{transform:translateY(calc(100% - 42px));border-radius:0;}
+  .core-panel.open{transform:translateY(0);}
+  .panel-toggle{
+    display:block;position:absolute;top:-1px;left:50%;transform:translateX(-50%) translateY(-100%);
+    background:var(--bg);border:1px solid var(--border);border-bottom:none;
+    font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--cyan);
+    padding:5px 18px;letter-spacing:.15em;cursor:pointer;
+  }
+  .wrapper{padding-bottom:50px;}
+  .coords{display:none;}
+}
+
+button{width:100%;background:transparent;border:1px solid rgba(0,255,200,0.15);color:var(--cyan);padding:7px 10px;cursor:pointer;font-size:11px;font-family:"Share Tech Mono",monospace;text-align:left;letter-spacing:0.05em;transition:all .12s;}
 button:hover{background:rgba(0,255,200,0.08);border-color:rgba(0,255,200,0.4);text-shadow:0 0 8px var(--cyan);}
+button:focus{outline:2px solid var(--cyan);outline-offset:2px;}
 button.active{border-color:var(--cyan);background:rgba(0,255,200,0.1);color:#fff;}
+@media (pointer:fine){ button{cursor:none;} }
 
 #gameArea{margin-top:12px;min-height:80px;font-size:11px;line-height:1.7;color:rgba(0,255,200,0.85);}
-#gameArea input{background:rgba(0,255,200,0.05);border:1px solid rgba(0,255,200,0.3);color:#fff;padding:6px 9px;font-family:"Share Tech Mono",monospace;font-size:11px;outline:none;cursor:none;letter-spacing:.08em;}
+#gameArea input{background:rgba(0,255,200,0.05);border:1px solid rgba(0,255,200,0.3);color:#fff;padding:6px 9px;font-family:"Share Tech Mono",monospace;font-size:11px;outline:none;cursor:text;letter-spacing:.08em;}
 #gameArea input::placeholder{color:rgba(0,255,200,0.3);}
-#gameArea input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,255,200,0.15);}
+#gameArea input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,255,200,0.15);outline:2px solid rgba(0,255,200,0.4);}
 
 .cipher-wrap{display:flex;flex-direction:column;gap:7px;}
 .cipher-code{font-size:11px;color:#fff;letter-spacing:.1em;padding:6px 8px;border:1px solid rgba(0,255,200,0.2);background:rgba(0,255,200,0.04);word-break:break-all;line-height:1.9;}
@@ -108,19 +129,16 @@ button.active{border-color:var(--cyan);background:rgba(0,255,200,0.1);color:#fff
 .void-count{font-size:30px;font-weight:700;color:#fff;letter-spacing:.1em;line-height:1;}
 .void-label{font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:4px;}
 
-/* TYPING TEST */
 .type-target{font-size:11px;color:#fff;padding:6px 8px;border:1px solid rgba(0,255,200,0.2);background:rgba(0,0,0,0.4);margin-bottom:6px;letter-spacing:.08em;line-height:1.8;}
 .type-target span.done{color:var(--green);}
 .type-target span.wrong{color:var(--magenta);text-decoration:underline;}
 .type-target span.current{background:rgba(0,255,200,0.2);}
 
-/* SIGNAL LOCK */
 .signal-grid{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
 .signal-btn{width:64px;height:32px;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .1s;}
 .signal-btn.lit{border-color:var(--cyan)!important;color:#000!important;background:var(--cyan)!important;box-shadow:0 0 10px rgba(0,255,200,0.5);}
 .signal-btn.wrong-flash{border-color:var(--magenta)!important;background:rgba(255,0,170,0.15)!important;}
 
-/* HACK SEQUENCE */
 .hack-dots{display:flex;gap:8px;margin:6px 0;}
 .hack-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,255,200,0.3);}
 .hack-dot.filled{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 6px var(--cyan);}
@@ -128,52 +146,52 @@ button.active{border-color:var(--cyan);background:rgba(0,255,200,0.1);color:#fff
 .hack-numpad button{padding:5px 0;font-size:12px;width:100%;}
 .hack-attempt{font-size:10px;color:rgba(0,255,200,0.5);margin-top:4px;}
 
-/* COORDS */
 .coords{position:fixed;top:18px;right:18px;font-family:"Share Tech Mono",monospace;font-size:10px;color:rgba(0,255,200,0.3);z-index:6;letter-spacing:.1em;}
 
-/* CORNERS */
 .corner{position:fixed;width:18px;height:18px;z-index:5;opacity:0.35;}
 .corner-tl{top:12px;left:12px;border-top:1px solid var(--cyan);border-left:1px solid var(--cyan);}
 .corner-tr{top:12px;right:12px;border-top:1px solid var(--cyan);border-right:1px solid var(--cyan);}
 .corner-bl{bottom:12px;left:12px;border-bottom:1px solid var(--cyan);border-left:1px solid var(--cyan);}
 .corner-br{bottom:12px;right:12px;border-bottom:1px solid var(--cyan);border-right:1px solid var(--cyan);}
 
-/* TOAST */
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);font-family:"Share Tech Mono",monospace;font-size:12px;color:#000;background:var(--cyan);padding:8px 20px;z-index:200;letter-spacing:.15em;opacity:0;transition:opacity .3s;pointer-events:none;}
 #toast.show{opacity:1;}
 
-/* SECRET REVEAL */
-#secretReveal{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);font-family:"Share Tech Mono",monospace;text-align:center;}
+#secretReveal{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);font-family:"Share Tech Mono",monospace;text-align:center;padding:20px;}
 #secretReveal.active{display:flex;}
 #secretReveal h2{font-family:"Orbitron",sans-serif;font-size:clamp(24px,5vw,52px);color:var(--cyan);text-shadow:0 0 20px var(--cyan),0 0 60px rgba(0,255,200,0.4);letter-spacing:.2em;animation:pulse 1s infinite alternate;}
 #secretReveal p{color:rgba(0,255,200,0.6);font-size:12px;margin-top:16px;letter-spacing:.2em;}
 #secretReveal .close-btn{margin-top:24px;width:auto;padding:8px 24px;}
 
-/* IDLE WARNING */
 #idleWarning{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:"Share Tech Mono",monospace;font-size:13px;color:var(--magenta);text-shadow:0 0 12px var(--magenta);letter-spacing:.2em;z-index:10;display:none;text-align:center;pointer-events:none;}
 #idleWarning.show{display:block;animation:idlePulse 1s infinite alternate;}
 @keyframes idlePulse{from{opacity:1;}to{opacity:0.3;}}
+
+/* Reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+}
 </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<div id="glitchOverlay"></div>
+<canvas id="matrix" aria-hidden="true"></canvas>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div id="glitchOverlay" aria-hidden="true"></div>
 
-<div class="corner corner-tl"></div>
-<div class="corner corner-tr"></div>
-<div class="corner corner-bl"></div>
-<div class="corner corner-br"></div>
+<div class="corner corner-tl" aria-hidden="true"></div>
+<div class="corner corner-tr" aria-hidden="true"></div>
+<div class="corner corner-bl" aria-hidden="true"></div>
+<div class="corner corner-br" aria-hidden="true"></div>
 
-<div class="cursor-outer" id="cursorOuter"></div>
-<div class="cursor-inner" id="cursorInner"></div>
+<div class="cursor-outer" id="cursorOuter" aria-hidden="true"></div>
+<div class="cursor-inner" id="cursorInner" aria-hidden="true"></div>
 
-<div id="toast"></div>
-<div id="idleWarning">WARNING: USER ABSENT<br><span style="font-size:10px;color:rgba(255,0,170,0.6)">move to resume</span></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="idleWarning" aria-hidden="true">WARNING: USER ABSENT<br><span style="font-size:10px;color:rgba(255,0,170,0.6)">move to resume</span></div>
 
-<div id="secretReveal">
+<div id="secretReveal" role="dialog" aria-modal="true" aria-label="Classified Access Unlocked">
   <h2>SECHSSIEBEN</h2>
   <p>// CLASSIFIED ACCESS UNLOCKED //<br><br>du hast das versteckte wort gefunden.<br>sigma level: <span style="color:#fff">TRANSCENDED</span></p>
   <button class="close-btn" onclick="closeSecret()">&gt; schließen</button>
@@ -186,25 +204,26 @@ button.active{border-color:var(--cyan);background:rgba(0,255,200,0.1);color:#fff
     <p id="callsignDisplay"></p>
   </div>
 
-  <div class="status-bar">
-    <span><span class="status-dot"></span>NODE ACTIVE</span>
-    <span><span class="status-dot yellow"></span>SIGNAL WEAK</span>
-    <span><span class="status-dot red" id="emotionDot"></span><span id="emotionLabel">EMOTION OFF</span></span>
+  <div class="status-bar" role="status">
+    <span><span class="status-dot" aria-hidden="true"></span>NODE ACTIVE</span>
+    <span><span class="status-dot yellow" aria-hidden="true"></span>SIGNAL WEAK</span>
+    <span><span class="status-dot red" id="emotionDot" aria-hidden="true"></span><span id="emotionLabel">EMOTION OFF</span></span>
   </div>
 
   <div class="sigma-score">SIGMA SCORE // <span id="scoreVal">0</span></div>
 
-  <div class="links">
-    <a href="https://www.tiktok.com/@thesteve2017">TikTok</a>
-    <a href="https://soundcloud.com/stxve17">SC STREAM</a>
-    <a href="https://selbsthilfe-hier-buchen.webnode.page/">UNKNOWN</a>
-  </div>
+  <nav class="links" aria-label="External links">
+    <a href="https://www.tiktok.com/@thesteve2017" target="_blank" rel="noopener noreferrer">TT NODE</a>
+    <a href="https://soundcloud.com/stxve17" target="_blank" rel="noopener noreferrer">SC STREAM</a>
+    <a href="https://selbsthilfe-hier-buchen.webnode.page/" target="_blank" rel="noopener noreferrer">UNKNOWN</a>
+  </nav>
 </div>
 
-<div class="terminal" id="terminal">&gt; booting core</div>
-<div class="coords" id="coords">X:0000 Y:0000</div>
+<div class="terminal" id="terminal" aria-hidden="true">&gt; booting core</div>
+<div class="coords" id="coords" aria-hidden="true">X:0000 Y:0000</div>
 
-<div class="core-panel">
+<div class="core-panel" id="corePanel">
+  <button class="panel-toggle" id="panelToggle" onclick="togglePanel()" aria-expanded="false" aria-controls="corePanel">▲ MODULES</button>
   <div class="core-title">// SIGMA MODULES</div>
   <div class="btn-row">
     <button id="btn-callsign" onclick="toggle('callsign')">&gt; set callsign</button>
@@ -220,10 +239,20 @@ button.active{border-color:var(--cyan);background:rgba(0,255,200,0.1);color:#fff
 
 <script>
 /* ═══════════════════════════════════════
-   AUDIO ENGINE (Web Audio API, no files)
+   MOBILE PANEL TOGGLE
+═══════════════════════════════════════ */
+function togglePanel(){
+  const panel=document.getElementById("corePanel");
+  const btn=document.getElementById("panelToggle");
+  const open=panel.classList.toggle("open");
+  btn.textContent=open?"▼ MODULES":"▲ MODULES";
+  btn.setAttribute("aria-expanded", open?"true":"false");
+}
+
+/* ═══════════════════════════════════════
+   AUDIO ENGINE
 ═══════════════════════════════════════ */
 const AC = new (window.AudioContext || window.webkitAudioContext)();
-
 function resumeAC(){ if(AC.state==="suspended") AC.resume(); }
 document.addEventListener("click", resumeAC, {once:true});
 
@@ -238,7 +267,6 @@ function beep(freq=440, dur=0.08, type="square", vol=0.08){
     o.start(); o.stop(AC.currentTime+dur);
   }catch(e){}
 }
-
 function playClick(){ beep(800,0.04,"square",0.06); }
 function playSuccess(){ beep(660,0.08,"sine",0.1); setTimeout(()=>beep(880,0.12,"sine",0.1),90); }
 function playFail(){ beep(200,0.15,"sawtooth",0.08); }
@@ -255,7 +283,6 @@ function playGlitchSound(){
     src.start();
   }catch(e){}
 }
-
 function playAmbient(){
   try{
     resumeAC();
@@ -267,33 +294,36 @@ function playAmbient(){
     o1.connect(filter); o2.connect(filter); filter.connect(g); g.connect(AC.destination);
     g.gain.value=0.04;
     o1.start(); o2.start();
-    o1.frequency.setValueAtTime(55,AC.currentTime);
     o1.frequency.linearRampToValueAtTime(60,AC.currentTime+8);
-    o2.frequency.setValueAtTime(58,AC.currentTime);
     o2.frequency.linearRampToValueAtTime(53,AC.currentTime+8);
     setTimeout(()=>{ try{o1.stop();o2.stop();}catch(e){} setTimeout(playAmbient,2000); },8000);
   }catch(e){}
 }
-// start ambient after first interaction
 document.addEventListener("click", ()=>{ setTimeout(playAmbient,500); }, {once:true});
 
 /* ═══════════════════════════════════════
-   CURSOR + TRAIL
+   CURSOR + TRAIL (mouse only)
 ═══════════════════════════════════════ */
 const outerCursor = document.getElementById("cursorOuter");
 const innerCursor = document.getElementById("cursorInner");
+const isMouse = window.matchMedia("(pointer:fine)").matches;
 const TRAIL_LEN = 12;
 const trailDots = [];
-for(let i=0;i<TRAIL_LEN;i++){
-  const d=document.createElement("div");
-  d.className="trail-dot";
-  d.style.opacity="0";
-  document.body.appendChild(d);
-  trailDots.push({el:d,x:0,y:0});
-}
-let trailPositions=[];
 
+if(isMouse){
+  for(let i=0;i<TRAIL_LEN;i++){
+    const d=document.createElement("div");
+    d.className="trail-dot";
+    d.setAttribute("aria-hidden","true");
+    d.style.opacity="0";
+    document.body.appendChild(d);
+    trailDots.push({el:d,x:0,y:0});
+  }
+}
+
+let trailPositions=[];
 document.addEventListener("mousemove",e=>{
+  if(!isMouse) return;
   const x=e.clientX,y=e.clientY;
   innerCursor.style.left=x+"px"; innerCursor.style.top=y+"px";
   outerCursor.style.left=x+"px"; outerCursor.style.top=y+"px";
@@ -309,14 +339,18 @@ document.addEventListener("mousemove",e=>{
   resetIdle();
 });
 document.addEventListener("mousedown",()=>{
+  if(!isMouse) return;
   outerCursor.style.width=outerCursor.style.height="16px";
   outerCursor.style.borderColor="rgba(0,255,200,1)";
   playClick();
 });
 document.addEventListener("mouseup",()=>{
+  if(!isMouse) return;
   outerCursor.style.width=outerCursor.style.height="28px";
   outerCursor.style.borderColor="rgba(0,255,200,0.55)";
 });
+document.addEventListener("touchstart",()=>resetIdle(),{passive:true});
+document.addEventListener("touchmove",()=>resetIdle(),{passive:true});
 
 /* ═══════════════════════════════════════
    TERMINAL
@@ -324,7 +358,6 @@ document.addEventListener("mouseup",()=>{
 const termLines=[
   "&gt; syncing reality...","&gt; sigma core active","&gt; emotion layer OFF",
   "&gt; system unstable","&gt; scanning for threats","&gt; glyph engine loaded",
-  "&gt; buy buy buy","&gt; Hallo Herr Reimers","&gt; follow on tiktok",
   "&gt; identity: UNKNOWN","&gt; uptime: 67:00:00","&gt; void detected",
   "&gt; signal locked","&gt; weakness: NONE","&gt; processing...",
   "&gt; firewall: BYPASSED","&gt; log: all clear","&gt; target: YOU"
@@ -334,7 +367,7 @@ const termEl=document.getElementById("terminal");
 setInterval(()=>{ tIdx=(tIdx+1)%termLines.length; termEl.innerHTML=termLines[tIdx]; },1600);
 
 /* ═══════════════════════════════════════
-   MATRIX
+   MATRIX — requestAnimationFrame
 ═══════════════════════════════════════ */
 const canvas=document.getElementById("matrix");
 const ctx=canvas.getContext("2d");
@@ -352,7 +385,13 @@ window.addEventListener("resize",resize); resize();
 
 const chars="01ABCDEFGHIJKLMNOPQRSTUVWXYZ\u03b1\u03b2\u03b3\u03b4\u03b5\u03b7\u03b8\u03ba\u03bb\u03bc\u03bd\u03be\u03c0\u03c1\u03c3\u03c4\u03c6\u03c7\u03c8\u03c9\u65e5\u6708\u706b\u6c34\u6728\u91d1\u571f\u30a2\u30a4\u30a6\u30a8\u30aa\u30ab\u30ad\u30af\u30b1\u30b3!@#$%^&*<>?".split("");
 
-function draw(){
+let lastFrame=0;
+const FRAME_MS=38; // ~26fps target
+
+function draw(ts){
+  requestAnimationFrame(draw);
+  if(ts-lastFrame < FRAME_MS) return;
+  lastFrame=ts;
   ctx.fillStyle="rgba(0,0,0,0.048)";
   ctx.fillRect(0,0,canvas.width,canvas.height);
   for(let i=0;i<cols;i++){
@@ -370,17 +409,36 @@ function draw(){
     }
   }
 }
-setInterval(draw,38);
+requestAnimationFrame(draw);
 
 /* ═══════════════════════════════════════
-   SCORE
+   SCORE — localStorage persistence
 ═══════════════════════════════════════ */
-let sigmaScore=0;
+let sigmaScore = parseInt(localStorage.getItem("sigmaScore")||"0",10);
+document.getElementById("scoreVal").textContent = sigmaScore;
+
 function addScore(n){
   sigmaScore+=n;
+  localStorage.setItem("sigmaScore", sigmaScore);
   document.getElementById("scoreVal").textContent=sigmaScore;
   showToast("+" + n + " SIGMA POINTS");
 }
+
+/* Reset score button — hidden easter egg: triple-click on score */
+let scoreClicks=0,scoreClickTimer=null;
+document.getElementById("scoreVal").addEventListener("click",()=>{
+  scoreClicks++;
+  clearTimeout(scoreClickTimer);
+  scoreClickTimer=setTimeout(()=>{ scoreClicks=0; },500);
+  if(scoreClicks>=3){
+    scoreClicks=0;
+    sigmaScore=0;
+    localStorage.setItem("sigmaScore","0");
+    document.getElementById("scoreVal").textContent="0";
+    showToast("SCORE RESET");
+    playGlitchSound();
+  }
+});
 
 /* ═══════════════════════════════════════
    TOAST
@@ -394,7 +452,7 @@ function showToast(msg){
 }
 
 /* ═══════════════════════════════════════
-   GLITCH MODE (G key)
+   GLITCH MODE
 ═══════════════════════════════════════ */
 function triggerGlitch(){
   playGlitchSound();
@@ -405,7 +463,6 @@ function triggerGlitch(){
     const line=document.createElement("div");
     line.className="glitch-line";
     line.style.top=Math.random()*100+"%";
-    line.style.animationDelay=Math.random()*2+"s";
     ov.appendChild(line);
   }
   for(let i=0;i<4;i++){
@@ -424,8 +481,7 @@ function triggerGlitch(){
    VOID MODE (Konami Code)
 ═══════════════════════════════════════ */
 const KONAMI=[38,38,40,40,37,39,37,39,66,65];
-let konamiIdx=0;
-let voidMode=false;
+let konamiIdx=0, voidMode=false;
 document.addEventListener("keydown",e=>{
   resetIdle();
   if(e.key.toLowerCase()==="g") triggerGlitch();
@@ -461,14 +517,9 @@ function resetIdle(){
 resetIdle();
 
 /* ═══════════════════════════════════════
-   SECRET WORD
+   SECRET WORD — stored in JS only, not DOM
 ═══════════════════════════════════════ */
-/* hidden span in body — invisible to normal users */
-const hiddenSpan=document.createElement("span");
-hiddenSpan.style.cssText="position:fixed;bottom:0;right:0;width:1px;height:1px;overflow:hidden;color:transparent;font-size:1px;user-select:none;";
-hiddenSpan.setAttribute("aria-hidden","true");
-hiddenSpan.textContent="sechssieben";
-document.body.appendChild(hiddenSpan);
+const SECRET_WORD = "sechssieben"; // not injected into DOM
 
 function closeSecret(){
   document.getElementById("secretReveal").classList.remove("active");
@@ -477,7 +528,7 @@ function closeSecret(){
 /* ═══════════════════════════════════════
    MODULES
 ═══════════════════════════════════════ */
-let active=null,clicks=0,reactionTimer=null,reactionStart=null;
+let active=null, clicks=0, reactionTimer=null, reactionStart=null;
 
 function toggle(name){
   const g=document.getElementById("gameArea");
@@ -509,11 +560,10 @@ function initCallsign(g){
 function setCallsign(){
   const v=(document.getElementById("csIn").value||"").toUpperCase().trim();
   if(!v) return;
-  /* secret word easter egg */
-  if(v.toLowerCase()==="sechssieben"){
+  if(v.toLowerCase()===SECRET_WORD){
     document.getElementById("secretReveal").classList.add("active");
     playSuccess(); playSuccess();
-    addScore(6767676767);
+    addScore(500);
     return;
   }
   document.getElementById("callsignDisplay").textContent="OPERATIVE: "+v;
@@ -536,7 +586,9 @@ function initReaction(g){
       const pts=ms<180?50:ms<260?25:ms<400?10:3;
       const grade=ms<180?'<span class="result-ok">SIGMA TIER</span>':ms<260?'<span style="color:#ffcc00">DECENT</span>':'<span class="result-fail">TOO SLOW</span>';
       playSuccess();
-      g.innerHTML=`<div>reaction: <b style="color:#fff;font-size:14px">${ms}ms</b></div><div style="margin-top:4px">${grade}</div>`;
+      g.innerHTML=`<div>reaction: <b style="color:#fff;font-size:14px">${ms}ms</b></div>
+        <div style="margin-top:4px">${grade}</div>
+        <button onclick="initReaction(document.getElementById('gameArea'))" style="margin-top:8px;width:auto;padding:5px 14px">&gt; try again</button>`;
       addScore(pts);
     };
   },Math.random()*3000+1200);
@@ -579,7 +631,8 @@ function initTyping(g){
         const pts=Math.round(wpm/2);
         playSuccess();
         g.innerHTML=`<div class="result-ok" style="font-size:12px">&gt; COMPLETE</div>
-          <div style="margin-top:6px">WPM: <b style="color:#fff">${wpm}</b> &nbsp; ACC: <b style="color:#fff">${acc}%</b></div>`;
+          <div style="margin-top:6px">WPM: <b style="color:#fff">${wpm}</b> &nbsp; ACC: <b style="color:#fff">${acc}%</b></div>
+          <button onclick="initTyping(document.getElementById('gameArea'))" style="margin-top:8px;width:auto;padding:5px 14px">&gt; new test</button>`;
         addScore(pts);
       }
       inp.addEventListener("keydown",ke=>{ if(ke.key==="Backspace"){ typed=typed.slice(0,-1); render(); }});
@@ -593,7 +646,7 @@ function initSignal(g){
   const codes=["SIG","K67","XOR","NULL","VOID","CORE"].sort(()=>Math.random()-.5).slice(0,4);
   const sequence=[...codes].sort(()=>Math.random()-.5);
   let step=0, playerSeq=[], lit=-1;
-  let phase="watch"; // watch → input
+  let phase="watch";
 
   function showSeq(idx){
     if(idx>=sequence.length){ phase="input"; render(); return; }
@@ -622,7 +675,8 @@ function initSignal(g){
       playerSeq.push(i);
       if(step===sequence.length){
         playSuccess();
-        g.innerHTML='<div class="result-ok">&gt; SIGNAL LOCKED<br>sequence verified</div>';
+        g.innerHTML=`<div class="result-ok">&gt; SIGNAL LOCKED<br>sequence verified</div>
+          <button onclick="initSignal(document.getElementById('gameArea'))" style="margin-top:8px;width:auto;padding:5px 14px">&gt; new sequence</button>`;
         addScore(40);
       } else { lit=i; render(); setTimeout(()=>{lit=-1;render();},300); }
     } else {
@@ -633,41 +687,31 @@ function initSignal(g){
       setTimeout(()=>{ phase="watch"; step=0; showSeq(0); },600);
     }
   };
-
   render();
   setTimeout(()=>showSeq(0),600);
 }
 
-/* ── HACK SEQUENCE (Mastermind) ── */
+/* ── HACK SEQUENCE ── */
 function initHack(g){
   const secret=[0,1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5).slice(0,4);
-  let current=[];
-  let attempts=[];
+  let current=[], attempts=[];
   const MAX=5;
 
   function render(){
-    let html='<div style="font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:6px">crack the 4-digit code ['+( MAX-attempts.length)+' attempts left]</div>';
+    let html='<div style="font-size:10px;color:rgba(0,255,200,0.4);margin-bottom:6px">crack the 4-digit code ['+(MAX-attempts.length)+' attempts left]</div>';
     html+='<div class="hack-dots">';
-    for(let i=0;i<4;i++){
-      html+=`<div class="hack-dot${i<current.length?" filled":""}"></div>`;
-    }
+    for(let i=0;i<4;i++) html+=`<div class="hack-dot${i<current.length?" filled":""}"></div>`;
     html+='</div>';
-    attempts.forEach(a=>{
-      html+=`<div class="hack-attempt">[${a.guess.join("")}] &rarr; ${a.exact} exact, ${a.close} close</div>`;
-    });
+    attempts.forEach(a=>{ html+=`<div class="hack-attempt">[${a.guess.join("")}] &rarr; ${a.exact} exact, ${a.close} close</div>`; });
     html+='<div class="hack-numpad">';
-    for(let n=0;n<=9;n++){
-      html+=`<button onclick="hackInput(${n})" style="padding:5px 0;font-size:12px">${n}</button>`;
-    }
+    for(let n=0;n<=9;n++) html+=`<button onclick="hackInput(${n})" style="padding:5px 0;font-size:12px">${n}</button>`;
     html+=`<button onclick="hackDel()" style="padding:5px 0;font-size:12px;grid-column:span 2;border-color:rgba(255,0,170,0.2);color:var(--magenta)">&larr;</button>`;
     html+=`<button onclick="hackSubmit()" style="padding:5px 0;font-size:12px;grid-column:span 3;border-color:rgba(0,255,200,0.4)">&gt; submit</button>`;
     html+='</div>';
     g.innerHTML=html;
   }
 
-  window.hackInput=n=>{
-    if(current.length<4){ current.push(n); beep(300+n*40,0.04,"square",0.05); render(); }
-  };
+  window.hackInput=n=>{ if(current.length<4){ current.push(n); beep(300+n*40,0.04,"square",0.05); render(); } };
   window.hackDel=()=>{ if(current.length) current.pop(); render(); };
   window.hackSubmit=()=>{
     if(current.length<4) return;
@@ -678,12 +722,14 @@ function initHack(g){
     attempts.push({guess:[...current],exact,close});
     if(exact===4){
       playSuccess();
-      g.innerHTML='<div class="result-ok" style="font-size:12px">&gt; CODE CRACKED<br><b style="color:#fff">'+secret.join("")+'</b></div>';
-      addScore(60);return;
+      g.innerHTML=`<div class="result-ok" style="font-size:12px">&gt; CODE CRACKED<br><b style="color:#fff">${secret.join("")}</b></div>
+        <button onclick="initHack(document.getElementById('gameArea'))" style="margin-top:8px;width:auto;padding:5px 14px">&gt; new code</button>`;
+      addScore(60); return;
     }
     if(attempts.length>=MAX){
       playFail();
-      g.innerHTML='<div class="result-fail">&gt; ACCESS DENIED<br>code was: <b style="color:#fff">'+secret.join("")+'</b></div>';
+      g.innerHTML=`<div class="result-fail">&gt; ACCESS DENIED<br>code was: <b style="color:#fff">${secret.join("")}</b></div>
+        <button onclick="initHack(document.getElementById('gameArea'))" style="margin-top:8px;width:auto;padding:5px 14px">&gt; retry</button>`;
       return;
     }
     playClick(); current=[]; render();
@@ -745,7 +791,7 @@ function initCipher(g){
 function initVoid(g){
   clicks=0;
   g.innerHTML=`<div class="void-label">void clicks</div><div class="void-count" id="c">0</div><div style="margin-top:6px;font-size:10px;color:rgba(0,255,200,0.3);min-height:14px" id="vMsg"></div>`;
-  const milestones={10:"not bad.",50:"keep going.",100:"sigma energy.",200:"you are the void.",500:"TRANSCENDED",670:"67676767676767",1000:"Fetter Hs mit Haarausfall steht da und blitzt"};
+  const milestones={10:"not bad.",50:"keep going.",100:"sigma energy.",200:"you are the void.",500:"TRANSCENDED"};
   g.onclick=()=>{
     clicks++;
     document.getElementById("c").textContent=clicks;
